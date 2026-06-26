@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLICK — Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+
+/* ── TOKENS ── */
+:root{
+  --bg:#0D0D14;
+  --bg2:#13131F;
+  --bg3:#1A1A2A;
+  --bg4:#222235;
+  --bg5:#2A2A40;
+  --lime:#C8F135;
+  --lime2:#D8F85A;
+  --lime-dim:rgba(200,241,53,.1);
+  --lime-glow:rgba(200,241,53,.15);
+  --text:#F0F0F8;
+  --text2:#A0A0C0;
+  --text3:#606080;
+  --border:rgba(255,255,255,.07);
+  --border2:rgba(255,255,255,.12);
+  --green:#2DD4A0;
+  --green-dim:rgba(45,212,160,.12);
+  --red:#F05A5A;
+  --red-dim:rgba(240,90,90,.12);
+  --amber:#F0B84A;
+  --amber-dim:rgba(240,184,74,.12);
+  --blue:#60A5FA;
+  --blue-dim:rgba(96,165,250,.1);
+  --purple:#A78BFA;
+  --sidebar-w:260px;
+  --topbar-h:52px;
+}
+
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  font-size:14px;
+  line-height:1.6;
+}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;
+  height:var(--topbar-h);
+  background:rgba(13,13,20,.85);
+  backdrop-filter:blur(16px);
+  border-bottom:0.5px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 1.5rem 0 0;
+  z-index:200;
+  gap:0;
+}
+.topbar-logo{
+  width:var(--sidebar-w);
+  display:flex;align-items:center;gap:10px;
+  padding:0 1.5rem;
+  border-right:0.5px solid var(--border);
+  height:100%;
+  flex-shrink:0;
+}
+.logo-mark{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--lime);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:700;font-size:16px;color:#0D0D14;
+  letter-spacing:-.5px;
+  flex-shrink:0;
+}
+.logo-text{
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:700;font-size:1.1rem;
+  letter-spacing:.08em;color:var(--text);
+}
+.logo-ver{
+  font-size:10px;font-weight:500;
+  background:var(--lime-dim);
+  border:0.5px solid rgba(200,241,53,.25);
+  color:var(--lime);
+  padding:2px 6px;border-radius:4px;
+  letter-spacing:.04em;margin-left:2px;
+}
+.topbar-search{
+  flex:1;display:flex;align-items:center;gap:.5rem;
+  padding:0 1.5rem;
+}
+.search-box{
+  display:flex;align-items:center;gap:.5rem;
+  background:var(--bg3);border:0.5px solid var(--border2);
+  border-radius:8px;padding:6px 12px;cursor:pointer;
+  width:260px;transition:border-color .15s;
+}
+.search-box:hover{border-color:rgba(200,241,53,.3);}
+.search-box i{font-size:15px;color:var(--text3);}
+.search-box span{font-size:13px;color:var(--text3);}
+.search-box kbd{
+  margin-left:auto;font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--text3);
+  background:var(--bg4);border:0.5px solid var(--border2);
+  border-radius:4px;padding:1px 5px;
+}
+.topbar-links{display:flex;align-items:center;gap:.25rem;margin-left:auto;}
+.tb-link{
+  display:flex;align-items:center;gap:.35rem;
+  font-size:12px;color:var(--text2);padding:5px 10px;
+  border-radius:6px;cursor:pointer;text-decoration:none;
+  transition:all .15s;
+}
+.tb-link:hover{background:var(--bg3);color:var(--text);}
+.tb-link i{font-size:15px;}
+.tb-btn{
+  background:var(--lime);color:#0D0D14;
+  border:none;border-radius:7px;padding:6px 14px;
+  font-size:12px;font-weight:600;cursor:pointer;
+  font-family:'Space Grotesk',sans-serif;
+  letter-spacing:.02em;transition:background .15s;
+  display:flex;align-items:center;gap:5px;
+}
+.tb-btn:hover{background:var(--lime2);}
+
+/* ── LAYOUT ── */
+.docs-layout{
+  display:flex;
+  margin-top:var(--topbar-h);
+  min-height:calc(100vh - var(--topbar-h));
+}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);
+  flex-shrink:0;
+  background:var(--bg2);
+  border-right:0.5px solid var(--border);
+  position:sticky;top:var(--topbar-h);
+  height:calc(100vh - var(--topbar-h));
+  overflow-y:auto;
+  padding:1.5rem 0 2rem;
+}
+.sidebar::-webkit-scrollbar{width:3px;}
+.sidebar::-webkit-scrollbar-track{background:transparent;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+.nav-group{margin-bottom:1.75rem;}
+.nav-group-label{
+  font-size:10px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);padding:0 1.25rem;
+  margin-bottom:.5rem;
+}
+.nav-item{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.4rem 1.25rem;
+  font-size:13px;color:var(--text2);
+  cursor:pointer;transition:all .12s;
+  border-left:2px solid transparent;
+  text-decoration:none;position:relative;
+}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,.03);}
+.nav-item.active{
+  color:var(--lime);
+  border-left-color:var(--lime);
+  background:var(--lime-dim);
+  font-weight:500;
+}
+.nav-item.active::before{
+  content:'';position:absolute;left:-1px;top:0;bottom:0;width:2px;
+  background:var(--lime);
+  box-shadow:0 0 8px var(--lime-glow);
+}
+.nav-item i{font-size:15px;flex-shrink:0;}
+.nav-item.active i{color:var(--lime);}
+.nav-sub{padding-left:2.1rem;}
+.nav-sub .nav-item{font-size:12px;padding:.3rem .75rem .3rem 0;border-left:none;}
+.nav-sub .nav-item.active{background:none;border-left:none;color:var(--lime);}
+.nav-sub .nav-item::before{display:none;}
+
+/* ── MAIN CONTENT ── */
+.main{
+  flex:1;min-width:0;
+  padding:3rem 4rem 5rem 3.5rem;
+  max-width:820px;
+}
+
+/* ── PAGE BREADCRUMB ── */
+.breadcrumb{
+  display:flex;align-items:center;gap:.4rem;
+  font-size:12px;color:var(--text3);margin-bottom:2rem;
+}
+.breadcrumb span{color:var(--text3);}
+.breadcrumb .crumb-sep{color:var(--border2);}
+.breadcrumb .crumb-cur{color:var(--text2);}
+
+/* ── TYPOGRAPHY ── */
+.doc-h1{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:2.2rem;font-weight:700;
+  letter-spacing:-.01em;line-height:1.2;
+  margin-bottom:.75rem;color:var(--text);
+}
+.doc-h1 .accent{color:var(--lime);}
+.doc-lead{
+  font-size:1.05rem;color:var(--text2);
+  line-height:1.7;margin-bottom:2rem;
+  max-width:600px;border-bottom:0.5px solid var(--border);
+  padding-bottom:2rem;
+}
+.doc-h2{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:1.35rem;font-weight:600;
+  margin:2.5rem 0 1rem;color:var(--text);
+  display:flex;align-items:center;gap:.5rem;
+  padding-top:.5rem;
+}
+.doc-h2 i{font-size:18px;color:var(--lime);}
+.doc-h3{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:1rem;font-weight:600;
+  margin:1.75rem 0 .65rem;color:var(--text);
+}
+.doc-p{
+  font-size:.9rem;color:var(--text2);
+  line-height:1.8;margin-bottom:1rem;
+}
+.doc-p strong{color:var(--text);font-weight:500;}
+.doc-p a{color:var(--lime);text-decoration:none;border-bottom:0.5px solid rgba(200,241,53,.3);}
+.doc-p a:hover{border-bottom-color:var(--lime);}
+
+/* ── CALLOUT BOXES ── */
+.callout{
+  border-radius:10px;padding:.9rem 1.1rem;
+  margin:1.25rem 0;display:flex;gap:.75rem;
+  align-items:flex-start;font-size:.875rem;line-height:1.6;
+}
+.callout i{font-size:18px;flex-shrink:0;margin-top:1px;}
+.callout-body strong{display:block;font-weight:500;margin-bottom:3px;}
+.callout.info{background:var(--blue-dim);border:0.5px solid rgba(96,165,250,.25);}
+.callout.info i,.callout.info .callout-body strong{color:var(--blue);}
+.callout.info .callout-body{color:rgba(96,165,250,.8);}
+.callout.warning{background:var(--amber-dim);border:0.5px solid rgba(240,184,74,.25);}
+.callout.warning i,.callout.warning .callout-body strong{color:var(--amber);}
+.callout.warning .callout-body{color:rgba(240,184,74,.8);}
+.callout.success{background:var(--green-dim);border:0.5px solid rgba(45,212,160,.25);}
+.callout.success i,.callout.success .callout-body strong{color:var(--green);}
+.callout.success .callout-body{color:rgba(45,212,160,.8);}
+.callout.danger{background:var(--red-dim);border:0.5px solid rgba(240,90,90,.25);}
+.callout.danger i,.callout.danger .callout-body strong{color:var(--red);}
+.callout.danger .callout-body{color:rgba(240,90,90,.8);}
+.callout.lime{background:var(--lime-dim);border:0.5px solid rgba(200,241,53,.25);}
+.callout.lime i,.callout.lime .callout-body strong{color:var(--lime);}
+.callout.lime .callout-body{color:rgba(200,241,53,.8);}
+
+/* ── CODE BLOCKS ── */
+.code-block{
+  background:var(--bg3);border:0.5px solid var(--border2);
+  border-radius:10px;margin:1rem 0;overflow:hidden;
+}
+.code-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.6rem 1rem;border-bottom:0.5px solid var(--border);
+  background:var(--bg4);
+}
+.code-lang{font-size:11px;font-weight:500;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.code-copy{
+  font-size:11px;color:var(--text3);
+  background:none;border:0.5px solid var(--border2);
+  border-radius:5px;padding:2px 8px;cursor:pointer;
+  display:flex;align-items:center;gap:4px;transition:all .15s;
+  font-family:'Inter',sans-serif;
+}
+.code-copy:hover{color:var(--text);border-color:var(--border2);}
+pre{padding:1.1rem 1.25rem;overflow-x:auto;margin:0;}
+pre::-webkit-scrollbar{height:3px;}
+pre::-webkit-scrollbar-track{background:transparent;}
+pre::-webkit-scrollbar-thumb{background:var(--border2);}
+code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.8rem;line-height:1.75;color:#E0E0F0;
+}
+.inline-code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.8rem;color:var(--lime);
+  background:var(--lime-dim);
+  border:0.5px solid rgba(200,241,53,.2);
+  border-radius:4px;padding:1px 6px;
+}
+.c-keyword{color:#C792EA;}
+.c-string{color:#C3E88D;}
+.c-comment{color:#546E7A;font-style:italic;}
+.c-num{color:#F78C6C;}
+.c-fn{color:#82AAFF;}
+.c-var{color:#FFCB6B;}
+.c-prop{color:#89DDFF;}
+
+/* ── TABLES ── */
+.doc-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.85rem;}
+.doc-table th{
+  text-align:left;padding:.65rem 1rem;
+  background:var(--bg3);color:var(--text2);
+  font-weight:500;font-size:.75rem;
+  letter-spacing:.06em;text-transform:uppercase;
+  border-bottom:0.5px solid var(--border2);
+}
+.doc-table th:first-child{border-radius:8px 0 0 0;}
+.doc-table th:last-child{border-radius:0 8px 0 0;}
+.doc-table td{
+  padding:.65rem 1rem;
+  border-bottom:0.5px solid var(--border);
+  color:var(--text2);vertical-align:top;
+  line-height:1.6;
+}
+.doc-table tr:last-child td{border-bottom:none;}
+.doc-table tr:hover td{background:rgba(255,255,255,.02);}
+.doc-table .em{color:var(--lime);font-weight:500;font-family:'JetBrains Mono',monospace;font-size:.8rem;}
+.doc-table .badge-g{background:var(--green-dim);color:var(--green);font-size:11px;padding:2px 7px;border-radius:4px;font-weight:500;}
+.doc-table .badge-r{background:var(--red-dim);color:var(--red);font-size:11px;padding:2px 7px;border-radius:4px;font-weight:500;}
+.doc-table .badge-a{background:var(--amber-dim);color:var(--amber);font-size:11px;padding:2px 7px;border-radius:4px;font-weight:500;}
+
+/* ── GESTURE CARDS ── */
+.gesture-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin:1rem 0;}
+.gest-card{
+  background:var(--bg3);border:0.5px solid var(--border2);
+  border-radius:10px;padding:.9rem 1rem;
+  transition:border-color .15s;
+}
+.gest-card:hover{border-color:rgba(200,241,53,.3);}
+.gest-em{font-size:1.6rem;display:block;margin-bottom:.5rem;}
+.gest-name{font-size:.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:2px;font-family:'Space Grotesk',sans-serif;}
+.gest-desc{font-size:.75rem;color:var(--text3);line-height:1.5;}
+.gest-tag{display:inline-block;margin-top:.4rem;font-size:.7rem;color:var(--lime);background:var(--lime-dim);border:0.5px solid rgba(200,241,53,.2);border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono',monospace;}
+
+/* ── STEP LIST ── */
+.step-list{margin:1rem 0;display:flex;flex-direction:column;gap:0;}
+.step{display:flex;gap:1.1rem;padding:1.1rem 0;border-bottom:0.5px solid var(--border);position:relative;}
+.step:last-child{border-bottom:none;}
+.step-num{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--bg4);border:0.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;color:var(--lime);
+  flex-shrink:0;font-family:'Space Grotesk',sans-serif;
+  margin-top:1px;
+}
+.step-body h4{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:.3rem;font-family:'Space Grotesk',sans-serif;}
+.step-body p{font-size:.85rem;color:var(--text2);line-height:1.7;}
+
+/* ── FEATURE CARDS ── */
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0;}
+.feat-card{
+  background:var(--bg3);border:0.5px solid var(--border);
+  border-radius:10px;padding:1rem 1.1rem;
+  transition:border-color .15s;
+}
+.feat-card:hover{border-color:rgba(200,241,53,.25);}
+.feat-icon{
+  width:34px;height:34px;border-radius:8px;
+  background:var(--lime-dim);border:0.5px solid rgba(200,241,53,.2);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:.75rem;
+}
+.feat-icon i{font-size:17px;color:var(--lime);}
+.feat-card h3{font-size:.875rem;font-weight:600;color:var(--text);margin-bottom:.35rem;font-family:'Space Grotesk',sans-serif;}
+.feat-card p{font-size:.8rem;color:var(--text2);line-height:1.6;}
+
+/* ── ROLE CARDS ── */
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0;}
+.role-card{border-radius:10px;padding:1.1rem;border:0.5px solid var(--border);}
+.role-card.host{background:rgba(167,139,250,.07);border-color:rgba(167,139,250,.2);}
+.role-card.student{background:rgba(45,212,160,.07);border-color:rgba(45,212,160,.2);}
+.role-title{font-size:.9rem;font-weight:600;margin-bottom:.6rem;display:flex;align-items:center;gap:.45rem;font-family:'Space Grotesk',sans-serif;}
+.role-card.host .role-title{color:var(--purple);}
+.role-card.student .role-title{color:var(--green);}
+.role-list{list-style:none;display:flex;flex-direction:column;gap:.35rem;}
+.role-list li{font-size:.8rem;color:var(--text2);display:flex;align-items:flex-start;gap:.45rem;line-height:1.5;}
+.role-list li::before{content:'→';color:var(--text3);flex-shrink:0;font-size:.75rem;margin-top:2px;}
+
+/* ── TECH STACK ── */
+.stack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:1rem 0;}
+.stack-item{
+  background:var(--bg3);border:0.5px solid var(--border2);
+  border-radius:8px;padding:.7rem .9rem;
+  display:flex;align-items:center;gap:.6rem;
+}
+.stack-item i{font-size:18px;color:var(--text3);}
+.stack-name{font-size:.8rem;font-weight:500;color:var(--text2);}
+.stack-role{font-size:.7rem;color:var(--text3);}
+
+/* ── STAT STRIP ── */
+.stat-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;
+  margin:1.25rem 0;
+}
+.stat-item{
+  background:var(--bg3);border:0.5px solid var(--border);
+  border-radius:10px;padding:1rem;text-align:center;
+}
+.stat-val{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;color:var(--lime);display:block;}
+.stat-key{font-size:.72rem;color:var(--text3);margin-top:3px;display:block;}
+
+/* ── ON THIS PAGE (right TOC) ── */
+.right-toc{
+  width:200px;flex-shrink:0;
+  position:sticky;top:calc(var(--topbar-h) + 2rem);
+  align-self:flex-start;
+  padding:0 1rem;
+  display:none;
+}
+@media(min-width:1200px){.right-toc{display:block;}}
+.rtoc-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.75rem;}
+.rtoc-item{display:block;font-size:12px;color:var(--text3);text-decoration:none;padding:.3rem 0;border-left:2px solid var(--border);padding-left:.7rem;transition:all .12s;}
+.rtoc-item:hover{color:var(--text2);border-left-color:var(--border2);}
+.rtoc-item.active{color:var(--lime);border-left-color:var(--lime);}
+
+/* ── DIVIDER ── */
+.doc-divider{border:none;border-top:0.5px solid var(--border);margin:2.5rem 0;}
+
+/* ── NAV FOOTER ── */
+.doc-nav-footer{
+  display:flex;justify-content:space-between;gap:1rem;
+  margin-top:3rem;padding-top:2rem;border-top:0.5px solid var(--border);
+}
+.nav-foot-btn{
+  background:var(--bg3);border:0.5px solid var(--border2);
+  border-radius:10px;padding:.9rem 1.2rem;
+  cursor:pointer;transition:border-color .15s;
+  flex:1;max-width:220px;text-decoration:none;display:block;
+}
+.nav-foot-btn:hover{border-color:rgba(200,241,53,.3);}
+.nav-foot-dir{font-size:.72rem;color:var(--text3);display:block;margin-bottom:3px;}
+.nav-foot-title{font-size:.875rem;font-weight:500;color:var(--text);display:flex;align-items:center;gap:.35rem;}
+.nav-foot-btn.next .nav-foot-title{justify-content:flex-end;}
+
+/* ── BADGE PILL ── */
+.pill{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;font-weight:500;padding:2px 8px;border-radius:20px;}
+.pill-lime{background:var(--lime-dim);color:var(--lime);border:0.5px solid rgba(200,241,53,.2);}
+.pill-green{background:var(--green-dim);color:var(--green);border:0.5px solid rgba(45,212,160,.2);}
+.pill-red{background:var(--red-dim);color:var(--red);border:0.5px solid rgba(240,90,90,.2);}
+.pill-amber{background:var(--amber-dim);color:var(--amber);border:0.5px solid rgba(240,184,74,.2);}
+.pill-purple{background:rgba(167,139,250,.1);color:var(--purple);border:0.5px solid rgba(167,139,250,.2);}
+
+/* ── DEPLOY CARD ── */
+.deploy-card{
+  background:var(--bg3);border:0.5px solid var(--border2);
+  border-radius:12px;padding:1.25rem 1.4rem;margin:.75rem 0;
+  display:flex;align-items:flex-start;gap:1rem;
+}
+.deploy-icon{font-size:1.75rem;flex-shrink:0;}
+.deploy-name{font-size:.9rem;font-weight:600;color:var(--text);font-family:'Space Grotesk',sans-serif;margin-bottom:3px;}
+.deploy-meta{font-size:.78rem;color:var(--text2);line-height:1.55;}
+.deploy-badge{margin-top:.4rem;}
+
+/* ── SCROLLBAR ── */
+body::-webkit-scrollbar{width:5px;}
+body::-webkit-scrollbar-track{background:var(--bg);}
+body::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:3px;}
+body::-webkit-scrollbar-thumb:hover{background:var(--border2);}
+
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .main{padding:2rem 1.5rem 4rem;}
+  .feat-grid,.role-grid{grid-template-columns:1fr;}
+  .gesture-grid{grid-template-columns:1fr 1fr;}
+  .stat-strip{grid-template-columns:1fr 1fr;}
+  .stack-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-mark">F</div>
+    <span class="logo-text">FLICK</span>
+    <span class="logo-ver">v1.0</span>
+  </div>
+  <div class="topbar-search">
+    <div class="search-box">
+      <i class="ti ti-search"></i>
+      <span>Search docs...</span>
+      <kbd>⌘K</kbd>
+    </div>
+  </div>
+  <div class="topbar-links">
+    <a class="tb-link" href="#">
+      <i class="ti ti-brand-github"></i> GitHub
+    </a>
+    <a class="tb-link" href="#">
+      <i class="ti ti-external-link"></i> Live Demo
+    </a>
+    <button class="tb-btn"><i class="ti ti-player-play"></i> Launch App</button>
+  </div>
+</header>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <nav>
+      <div class="nav-group">
+        <div class="nav-group-label">Getting Started</div>
+        <a class="nav-item active" href="#overview"><i class="ti ti-home"></i> Overview</a>
+        <a class="nav-item" href="#quickstart"><i class="ti ti-bolt"></i> Quickstart</a>
+        <a class="nav-item" href="#how-it-works"><i class="ti ti-circuit-cell"></i> How it works</a>
+        <a class="nav-item" href="#deployment"><i class="ti ti-rocket"></i> Deployment</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Core Concepts</div>
+        <a class="nav-item" href="#gestures"><i class="ti ti-hand-finger"></i> Gesture system</a>
+        <a class="nav-item" href="#access-codes"><i class="ti ti-key"></i> Access codes</a>
+        <a class="nav-item" href="#anti-cheat"><i class="ti ti-shield-lock"></i> Anti-cheat</a>
+        <a class="nav-item" href="#auto-read"><i class="ti ti-volume"></i> Auto text-to-speech</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Portals</div>
+        <a class="nav-item" href="#host-portal"><i class="ti ti-school"></i> Host portal</a>
+        <a class="nav-item" href="#student-portal"><i class="ti ti-user-circle"></i> Student portal</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Reference</div>
+        <a class="nav-item" href="#reports"><i class="ti ti-report"></i> Reports</a>
+        <a class="nav-item" href="#tech-stack"><i class="ti ti-stack-2"></i> Tech stack</a>
+        <a class="nav-item" href="#email"><i class="ti ti-mail"></i> Email setup</a>
+        <a class="nav-item" href="#faq"><i class="ti ti-help-circle"></i> FAQ</a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ══ OVERVIEW ══ -->
+    <section id="overview">
+      <div class="breadcrumb">
+        <span>Docs</span>
+        <span class="crumb-sep">/</span>
+        <span class="crumb-cur">Overview</span>
+      </div>
+
+      <h1 class="doc-h1"><span class="accent">FLICK</span> — Gesture-Controlled Exam Platform</h1>
+      <p class="doc-lead">FLICK is a browser-native, AI-powered exam platform where students answer questions using hand gestures — no mouse, no keyboard, no extra hardware. One hand. One camera. Zero friction.</p>
+
+      <div class="stat-strip">
+        <div class="stat-item"><span class="stat-val">9</span><span class="stat-key">Gesture commands</span></div>
+        <div class="stat-item"><span class="stat-val">3s</span><span class="stat-key">Auto-read delay</span></div>
+        <div class="stat-item"><span class="stat-val">20 min</span><span class="stat-key">Code validity</span></div>
+        <div class="stat-item"><span class="stat-val">10×</span><span class="stat-key">Frame smoothing</span></div>
+      </div>
+
+      <h2 class="doc-h2"><i class="ti ti-sparkles"></i> What is FLICK?</h2>
+      <p class="doc-p">FLICK reimagines the exam experience by replacing the traditional mouse-and-keyboard interface with real-time hand gesture recognition. Using <strong>Google MediaPipe Hands</strong> running entirely in the browser, FLICK tracks 21 hand landmarks per frame and classifies them into 9 distinct gestures — each mapped to a specific exam action.</p>
+      <p class="doc-p">Questions are read aloud automatically via the <strong>Web Speech API</strong>, making FLICK inherently accessible. A host/student portal system with timed single-use access codes ensures each exam session is secure, proctored, and traceable.</p>
+
+      <div class="callout lime">
+        <i class="ti ti-hand-finger"></i>
+        <div class="callout-body">
+          <strong>Zero install, zero plugins</strong>
+          FLICK runs entirely in a standard browser tab. No extensions, no apps, no external dependencies beyond an internet connection for the MediaPipe model.
+        </div>
+      </div>
+
+      <h2 class="doc-h2"><i class="ti ti-users"></i> Who is it for?</h2>
+      <div class="role-grid">
+        <div class="role-card host">
+          <div class="role-title"><i class="ti ti-school"></i> Teachers / Hosts</div>
+          <ul class="role-list">
+            <li>Build multi-question exam forms with a visual builder</li>
+            <li>Mark correct answers per question</li>
+            <li>Generate per-student timed access codes</li>
+            <li>Monitor live session validity in the Sessions panel</li>
+            <li>View and download results with full answer keys</li>
+          </ul>
+        </div>
+        <div class="role-card student">
+          <div class="role-title"><i class="ti ti-user-circle"></i> Students</div>
+          <ul class="role-list">
+            <li>Enter a 6-character code received by email</li>
+            <li>Grant camera and mic once, before the timer starts</li>
+            <li>Answer all questions using only hand gestures</li>
+            <li>Hear each question read aloud automatically</li>
+            <li>See score and full answer key the moment they submit</li>
+          </ul>
+        </div>
+      </div>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ QUICKSTART ══ -->
+    <section id="quickstart">
+      <h2 class="doc-h2"><i class="ti ti-bolt"></i> Quickstart</h2>
+      <p class="doc-p">Get FLICK running in under 5 minutes. You only need a browser and a camera.</p>
+
+      <h3 class="doc-h3">1. Open the app</h3>
+      <p class="doc-p">Open <span class="inline-code">FLICK_exam_platform.html</span> in Chrome or Edge (recommended — best MediaPipe and Speech API support). Firefox works for most features except auto-read on some versions.</p>
+
+      <div class="callout warning">
+        <i class="ti ti-alert-triangle"></i>
+        <div class="callout-body">
+          <strong>Use a secure context</strong>
+          Camera access requires HTTPS or localhost. When deployed on GitHub Pages, HTTPS is enabled automatically. Opening the file locally via <span class="inline-code">file://</span> may block camera access in some browsers — use a local server instead.
+        </div>
+      </div>
+
+      <h3 class="doc-h3">2. Run a local server (if needed)</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">bash</span>
+          <button class="code-copy" onclick="copyCode(this)"><i class="ti ti-copy"></i> Copy</button>
+        </div>
+        <pre><code><span class="c-comment"># Python 3 (built-in)</span>
+python3 -m http.server 8080
+
+<span class="c-comment"># Node.js (npx)</span>
+npx serve .
+
+<span class="c-comment"># Then open:</span>
+<span class="c-string">http://localhost:8080/FLICK_exam_platform.html</span></code></pre>
+      </div>
+
+      <h3 class="doc-h3">3. Select your role</h3>
+      <p class="doc-p">The portal picker is the first screen. Choose <strong>Teacher / Host</strong> to create exams and generate codes, or <strong>Student</strong> to enter a code and take an exam.</p>
+
+      <h3 class="doc-h3">4. Create your first exam (Host)</h3>
+      <div class="step-list">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body"><h4>Go to Builder</h4><p>Click the <span class="inline-code">Builder</span> tab in the host nav. Enter a form title, optional description, and duration in minutes.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><h4>Add questions</h4><p>Click <span class="inline-code">Add Question</span>. Enter the question text, fill all 4 option fields, then click <span class="inline-code">✓</span> next to the correct answer to mark it.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body"><h4>Save the form</h4><p>Click <span class="inline-code">Save Form</span>. The form appears in the My Exams tab and is persisted to <span class="inline-code">localStorage</span>.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body"><h4>Generate a code</h4><p>Go to <span class="inline-code">Codes</span>, pick the form, enter the student's name and email, and click <span class="inline-code">Generate Code</span>. A 6-character code is created valid for 20 minutes.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body"><h4>Send to student</h4><p>An email preview pops up showing exactly what to send. Copy the code and email it manually, or set up EmailJS for real sending (see <a href="#email">Email setup</a>).</p></div>
+        </div>
+      </div>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ HOW IT WORKS ══ -->
+    <section id="how-it-works">
+      <h2 class="doc-h2"><i class="ti ti-circuit-cell"></i> How it works</h2>
+      <p class="doc-p">FLICK is a single-file HTML application. Every feature — gesture detection, speech synthesis, proctoring, storage, and reporting — runs client-side with no backend required.</p>
+
+      <h3 class="doc-h3">Gesture pipeline</h3>
+      <p class="doc-p">Each video frame from the webcam is sent to the <strong>MediaPipe Hands</strong> model, which returns 21 3D landmarks for the detected hand. FLICK's classifier reads those landmarks and maps them to one of 9 gesture labels. To prevent false triggers, labels are pushed into a 10-frame rolling buffer — a gesture only fires when 70% or more of recent frames agree on the same label.</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">javascript — gesture classifier</span>
+          <button class="code-copy" onclick="copyCode(this)"><i class="ti ti-copy"></i> Copy</button>
+        </div>
+        <pre><code><span class="c-fn">function</span> <span class="c-fn">classifyLM</span>(lm) {
+  <span class="c-comment">// tip-above-pip check with 0.03 threshold gap</span>
+  <span class="c-fn">function</span> <span class="c-fn">ext</span>(tip, pip) {
+    <span class="c-keyword">return</span> lm[tip].y &lt; lm[pip].y - <span class="c-num">0.03</span>;
+  }
+  <span class="c-keyword">const</span> <span class="c-var">thumbExt</span> = Math.<span class="c-fn">abs</span>(lm[<span class="c-num">4</span>].x - lm[<span class="c-num">2</span>].x) &gt; <span class="c-num">0.05</span>;
+  <span class="c-keyword">const</span> [i, m, r, p] = [<span class="c-fn">ext</span>(<span class="c-num">8</span>,<span class="c-num">6</span>), <span class="c-fn">ext</span>(<span class="c-num">12</span>,<span class="c-num">10</span>), <span class="c-fn">ext</span>(<span class="c-num">16</span>,<span class="c-num">14</span>), <span class="c-fn">ext</span>(<span class="c-num">20</span>,<span class="c-num">18</span>)];
+
+  <span class="c-keyword">if</span> (lm[<span class="c-num">4</span>].y &lt; lm[<span class="c-num">3</span>].y - <span class="c-num">0.05</span> &amp;&amp; !i &amp;&amp; !m &amp;&amp; !r &amp;&amp; !p) <span class="c-keyword">return</span> <span class="c-string">'next'</span>;
+  <span class="c-keyword">if</span> (lm[<span class="c-num">4</span>].y &gt; lm[<span class="c-num">3</span>].y + <span class="c-num">0.05</span> &amp;&amp; !i &amp;&amp; !m &amp;&amp; !r &amp;&amp; !p) <span class="c-keyword">return</span> <span class="c-string">'prev'</span>;
+  <span class="c-keyword">if</span> (p &amp;&amp; !i &amp;&amp; !m &amp;&amp; !r &amp;&amp; !thumbExt)          <span class="c-keyword">return</span> <span class="c-string">'speak'</span>;
+  <span class="c-keyword">if</span> (thumbExt &amp;&amp; i &amp;&amp; m &amp;&amp; r &amp;&amp; p)              <span class="c-keyword">return</span> <span class="c-string">'submit'</span>;
+  <span class="c-keyword">if</span> (!thumbExt &amp;&amp; !i &amp;&amp; !m &amp;&amp; !r &amp;&amp; !p)         <span class="c-keyword">return</span> <span class="c-string">'confirm'</span>;
+  <span class="c-keyword">if</span> (i &amp;&amp; !m &amp;&amp; !r &amp;&amp; !p)                       <span class="c-keyword">return</span> <span class="c-string">'opt0'</span>;
+  <span class="c-keyword">if</span> (i &amp;&amp; m &amp;&amp; !r &amp;&amp; !p)                        <span class="c-keyword">return</span> <span class="c-string">'opt1'</span>;
+  <span class="c-keyword">if</span> (i &amp;&amp; m &amp;&amp; r &amp;&amp; !p)                         <span class="c-keyword">return</span> <span class="c-string">'opt2'</span>;
+  <span class="c-keyword">if</span> (i &amp;&amp; m &amp;&amp; r &amp;&amp; p &amp;&amp; !thumbExt)             <span class="c-keyword">return</span> <span class="c-string">'opt3'</span>;
+}</code></pre>
+      </div>
+
+      <h3 class="doc-h3">Dwell-to-select timing</h3>
+      <p class="doc-p">Rather than triggering on a single frame, every gesture requires a <strong>dwell period</strong> — the gesture must be held continuously for the action to fire. This eliminates accidental triggers from passing hand movements.</p>
+
+      <table class="doc-table">
+        <thead><tr><th>Action type</th><th>Dwell time</th><th>Cooldown after</th></tr></thead>
+        <tbody>
+          <tr><td>Select option A/B/C/D</td><td><span class="em">1500 ms</span></td><td>1400 ms</td></tr>
+          <tr><td>Next / Previous</td><td><span class="em">600 ms</span></td><td>1400 ms</td></tr>
+          <tr><td>Read aloud</td><td><span class="em">600 ms</span></td><td>3000 ms</td></tr>
+          <tr><td>Submit exam</td><td><span class="em">3000 ms</span></td><td>5000 ms</td></tr>
+          <tr><td>Confirm (fist)</td><td><span class="em">instant</span></td><td>1600 ms</td></tr>
+        </tbody>
+      </table>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ GESTURES ══ -->
+    <section id="gestures">
+      <h2 class="doc-h2"><i class="ti ti-hand-finger"></i> Gesture system</h2>
+      <p class="doc-p">FLICK recognises 9 distinct hand gestures. Each is defined by a unique combination of extended fingers, making them mutually exclusive — no gesture can be confused for another.</p>
+
+      <div class="gesture-grid">
+        <div class="gest-card">
+          <span class="gest-em">☝️</span>
+          <span class="gest-name">1 finger</span>
+          <span class="gest-desc">Index finger only extended</span>
+          <span class="gest-tag">opt0 → Option A</span>
+        </div>
+        <div class="gest-card">
+          <span class="gest-em">✌️</span>
+          <span class="gest-name">2 fingers</span>
+          <span class="gest-desc">Index + middle extended</span>
+          <span class="gest-tag">opt1 → Option B</span>
+        </div>
+        <div class="gest-card">
+          <span class="gest-em">🤟</span>
+          <span class="gest-name">3 fingers</span>
+          <span class="gest-desc">Index + middle + ring</span>
+          <span class="gest-tag">opt2 → Option C</span>
+        </div>
+        <div class="gest-card">
+          <span class="gest-em">🖐️</span>
+          <span class="gest-name">4 fingers</span>
+          <span class="gest-desc">All fingers except thumb</span>
+          <span class="gest-tag">opt3 → Option D</span>
+        </div>
+        <div class="gest-card">
+          <span class="gest-em">✊</span>
+          <span class="gest-name">Fist</span>
+          <span class="gest-desc">No fingers extended</span>
+          <span class="gest-tag">confirm → instant select</span>
+        </div>
+        <div class="gest-card">
+          <span class="gest-em">👍</span>
+          <span class="gest-name">Thumb up</span>
+          <span class="gest-desc">Thumb above index, rest closed</span>
+          <span class="gest-tag">next → next question</span>
+        </div>
+        <div class="gest-card">
+          <span class="gest-em">👎</span>
+          <span class="gest-name">Thumb down</span>
+          <span class="gest-desc">Thumb below index, rest closed</span>
+          <span class="gest-tag">prev → previous</span>
+        </div>
+        <div class="gest-card">
+          <span class="gest-em">🤙</span>
+          <span class="gest-name">Pinky only</span>
+          <span class="gest-desc">Pinky extended, others closed</span>
+          <span class="gest-tag">speak → read aloud</span>
+        </div>
+        <div class="gest-card">
+          <span class="gest-em">🖖</span>
+          <span class="gest-name">All 5 fingers</span>
+          <span class="gest-desc">Thumb + all 4 fingers open</span>
+          <span class="gest-tag">submit → hold 3s</span>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <i class="ti ti-bulb"></i>
+        <div class="callout-body">
+          <strong>Tips for best recognition</strong>
+          Face your palm toward the camera. Keep your hand well-lit and within frame. The stability meter in the cam panel shows real-time confidence — aim for 70%+ (green bars) before holding a gesture.
+        </div>
+      </div>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ ACCESS CODES ══ -->
+    <section id="access-codes">
+      <h2 class="doc-h2"><i class="ti ti-key"></i> Access codes</h2>
+      <p class="doc-p">Every exam session is gated by a unique 6-character alphanumeric access code generated by the host. Codes are designed to be unambiguous — the character set excludes visually similar characters.</p>
+
+      <h3 class="doc-h3">Character set</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">javascript</span><button class="code-copy" onclick="copyCode(this)"><i class="ti ti-copy"></i> Copy</button></div>
+        <pre><code><span class="c-comment">// Excludes: O, 0, I, 1 (visually ambiguous)</span>
+<span class="c-keyword">const</span> <span class="c-var">chars</span> = <span class="c-string">'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'</span>;
+
+<span class="c-fn">function</span> <span class="c-fn">genCode</span>() {
+  <span class="c-keyword">let</span> <span class="c-var">c</span> = <span class="c-string">''</span>;
+  <span class="c-keyword">for</span> (<span class="c-keyword">let</span> <span class="c-var">i</span> = <span class="c-num">0</span>; <span class="c-var">i</span> &lt; <span class="c-num">6</span>; <span class="c-var">i</span>++)
+    <span class="c-var">c</span> += <span class="c-var">chars</span>[Math.<span class="c-fn">floor</span>(Math.<span class="c-fn">random</span>() * <span class="c-var">chars</span>.length)];
+  <span class="c-keyword">return</span> <span class="c-var">c</span>; <span class="c-comment">// e.g. "A3KZ9P"</span>
+}</code></pre>
+      </div>
+
+      <h3 class="doc-h3">Code lifecycle</h3>
+      <table class="doc-table">
+        <thead><tr><th>State</th><th>Condition</th><th>Student can enter?</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge-g">pending</span></td><td>Generated, not yet used, within 20 min</td><td>Yes</td></tr>
+          <tr><td><span class="badge-a">active</span></td><td>Student has passed validation, exam running</td><td>No (in use)</td></tr>
+          <tr><td><span class="badge-r">used</span></td><td>Exam submitted (any reason)</td><td>No (consumed)</td></tr>
+          <tr><td><span class="badge-r">expired</span></td><td>20 minutes elapsed without use</td><td>No (expired)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout danger">
+        <i class="ti ti-alert-circle"></i>
+        <div class="callout-body">
+          <strong>Codes are strictly single-use</strong>
+          Once a student submits (for any reason — normal submit, tab switch, or timeout), the code is immediately invalidated and its expiry is set to <span class="inline-code">Date.now()</span>. It cannot be re-entered.
+        </div>
+      </div>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ ANTI-CHEAT ══ -->
+    <section id="anti-cheat">
+      <h2 class="doc-h2"><i class="ti ti-shield-lock"></i> Anti-cheat</h2>
+      <p class="doc-p">FLICK includes two layers of proctoring that work together to keep exams honest.</p>
+
+      <h3 class="doc-h3">Tab-switch detection</h3>
+      <p class="doc-p">FLICK listens to two browser events simultaneously. If either fires while the exam overlay is visible, a 3-second countdown overlay appears and the exam auto-submits with a <span class="inline-code">reason: "tab-switch"</span> flag on the result.</p>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">javascript</span><button class="code-copy" onclick="copyCode(this)"><i class="ti ti-copy"></i> Copy</button></div>
+        <pre><code><span class="c-comment">// Fires when student switches to another tab</span>
+document.<span class="c-fn">addEventListener</span>(<span class="c-string">'visibilitychange'</span>, () =&gt; {
+  <span class="c-keyword">if</span> (document.hidden) <span class="c-fn">triggerTabViolation</span>();
+});
+
+<span class="c-comment">// Fires when student clicks away (another window, OS, etc.)</span>
+window.<span class="c-fn">addEventListener</span>(<span class="c-string">'blur'</span>, () =&gt; {
+  <span class="c-fn">triggerTabViolation</span>();
+});</code></pre>
+      </div>
+
+      <h3 class="doc-h3">Permission-first flow</h3>
+      <p class="doc-p">Camera and microphone permissions are requested on a dedicated screen <strong>before</strong> the exam timer starts. This prevents the browser's permission popup from stealing window focus and accidentally triggering the tab-switch guard.</p>
+
+      <div class="callout success">
+        <i class="ti ti-check"></i>
+        <div class="callout-body">
+          <strong>Stream reuse</strong>
+          Once permissions are granted, the media stream is passed directly into the exam — no second permission dialog ever fires, even as MediaPipe initialises.
+        </div>
+      </div>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ AUTO TEXT-TO-SPEECH ══ -->
+    <section id="auto-read">
+      <h2 class="doc-h2"><i class="ti ti-volume"></i> Auto text-to-speech</h2>
+      <p class="doc-p">Every question is read aloud automatically 3 seconds after it appears on screen. A progress bar in the cam panel counts down visibly. Students can re-trigger reading at any time with the pinky gesture, or press the <span class="inline-code">Read aloud</span> button.</p>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">javascript — auto-read timer</span><button class="code-copy" onclick="copyCode(this)"><i class="ti ti-copy"></i> Copy</button></div>
+        <pre><code><span class="c-fn">function</span> <span class="c-fn">startAutoRead</span>() {
+  <span class="c-keyword">let</span> <span class="c-var">elapsed</span> = <span class="c-num">0</span>;
+  <span class="c-keyword">const</span> <span class="c-var">DURATION</span> = <span class="c-num">3000</span>; <span class="c-comment">// 3 seconds</span>
+
+  EX.autoReadTimer = <span class="c-fn">setInterval</span>(() =&gt; {
+    <span class="c-var">elapsed</span> += <span class="c-num">100</span>;
+    <span class="c-comment">// update progress bar ...</span>
+    <span class="c-keyword">if</span> (<span class="c-var">elapsed</span> &gt;= <span class="c-var">DURATION</span>) {
+      <span class="c-fn">cancelAutoRead</span>();
+      <span class="c-fn">speakQ</span>(<span class="c-keyword">false</span>); <span class="c-comment">// auto-triggered, not manual</span>
+    }
+  }, <span class="c-num">100</span>);
+}</code></pre>
+      </div>
+
+      <p class="doc-p">The auto-read timer is cancelled any time the student navigates to a different question — whether by gesture or the on-screen navigator dots. A fresh 3-second countdown begins for the new question.</p>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ HOST PORTAL ══ -->
+    <section id="host-portal">
+      <h2 class="doc-h2"><i class="ti ti-school"></i> Host portal</h2>
+      <p class="doc-p">The host portal has four tabs: My Exams, Builder, Codes, and Results.</p>
+
+      <h3 class="doc-h3">Form builder</h3>
+      <p class="doc-p">The visual builder lets you add up to 20 questions per form. Each question requires exactly 4 options with one correct answer marked. Forms are saved to <span class="inline-code">localStorage</span> and persist across browser sessions.</p>
+
+      <div class="callout info">
+        <i class="ti ti-database"></i>
+        <div class="callout-body">
+          <strong>Storage note</strong>
+          All data (forms, sessions, results) is stored in <span class="inline-code">localStorage</span> in the current version. This means data is per-device and per-browser. For shared multi-device access, a Firebase backend is recommended — see the deployment section.
+        </div>
+      </div>
+
+      <h3 class="doc-h3">Sessions panel</h3>
+      <p class="doc-p">The Codes tab shows all generated sessions with live countdown timers, status badges (Live, Expired, Completed), and a colour-coded validity bar that turns amber below 50% and red below 20%.</p>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ STUDENT PORTAL ══ -->
+    <section id="student-portal">
+      <h2 class="doc-h2"><i class="ti ti-user-circle"></i> Student portal</h2>
+
+      <h3 class="doc-h3">Exam flow</h3>
+      <div class="step-list">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body"><h4>Enter code</h4><p>Student enters their name and the 6-character code from email. The code is validated instantly against the session store — checking expiry and single-use status before proceeding.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><h4>Grant permissions</h4><p>A dedicated setup screen requests camera and microphone access. The exam timer does not start until the student clicks <span class="inline-code">Start Exam Now</span> — granting permissions never costs exam time.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body"><h4>Answer by gesture</h4><p>Questions appear full-screen with the cam panel on the left. Each question reads itself aloud after 3 seconds. The student holds a gesture for 1.5 seconds to select an option, or uses thumb-up to advance.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body"><h4>Submit</h4><p>Hold all 5 fingers open for 3 seconds to submit, or navigate past the last question. The exam also auto-submits on tab switch or timer expiry.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body"><h4>View result</h4><p>The result screen shows score percentage, correct/wrong/skipped counts, and a full question-by-question review with the answer key. The report can be downloaded as a standalone HTML file.</p></div>
+        </div>
+      </div>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ REPORTS ══ -->
+    <section id="reports">
+      <h2 class="doc-h2"><i class="ti ti-report"></i> Reports</h2>
+      <p class="doc-p">FLICK generates a complete exam report the moment an exam is submitted. The report is available to both the student (immediately) and the host (via the Results tab).</p>
+
+      <h3 class="doc-h3">Report contents</h3>
+      <table class="doc-table">
+        <thead><tr><th>Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="em">pct</span></td><td>Score as a percentage (correct ÷ total × 100)</td></tr>
+          <tr><td><span class="em">correct</span></td><td>Number of correctly answered questions</td></tr>
+          <tr><td><span class="em">wrong</span></td><td>Number of incorrectly answered questions</td></tr>
+          <tr><td><span class="em">skip</span></td><td>Number of unanswered questions</td></tr>
+          <tr><td><span class="em">answers[]</span></td><td>Array of student's selected option index per question</td></tr>
+          <tr><td><span class="em">reason</span></td><td><span class="inline-code">completed</span> | <span class="inline-code">tab-switch</span> | <span class="inline-code">timeout</span></td></tr>
+          <tr><td><span class="em">date</span></td><td>Submission timestamp as locale string</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="doc-h3">Downloadable report</h3>
+      <p class="doc-p">Clicking <strong>Download Report</strong> generates a standalone <span class="inline-code">.html</span> file containing the full result including the answer key — correct answers highlighted green, wrong answers highlighted red. This file can be printed or archived without needing FLICK to be open.</p>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ TECH STACK ══ -->
+    <section id="tech-stack">
+      <h2 class="doc-h2"><i class="ti ti-stack-2"></i> Tech stack</h2>
+      <p class="doc-p">FLICK is entirely client-side. No framework, no bundler, no backend.</p>
+
+      <div class="stack-grid">
+        <div class="stack-item">
+          <i class="ti ti-hand-stop"></i>
+          <div><div class="stack-name">MediaPipe Hands</div><div class="stack-role">Gesture detection</div></div>
+        </div>
+        <div class="stack-item">
+          <i class="ti ti-volume"></i>
+          <div><div class="stack-name">Web Speech API</div><div class="stack-role">Text-to-speech</div></div>
+        </div>
+        <div class="stack-item">
+          <i class="ti ti-camera"></i>
+          <div><div class="stack-name">MediaDevices API</div><div class="stack-role">Camera + mic access</div></div>
+        </div>
+        <div class="stack-item">
+          <i class="ti ti-database"></i>
+          <div><div class="stack-name">localStorage</div><div class="stack-role">Persistent storage</div></div>
+        </div>
+        <div class="stack-item">
+          <i class="ti ti-typography"></i>
+          <div><div class="stack-name">Space Grotesk</div><div class="stack-role">Display typeface</div></div>
+        </div>
+        <div class="stack-item">
+          <i class="ti ti-icons"></i>
+          <div><div class="stack-name">Tabler Icons</div><div class="stack-role">Icon system</div></div>
+        </div>
+      </div>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ DEPLOYMENT ══ -->
+    <section id="deployment">
+      <h2 class="doc-h2"><i class="ti ti-rocket"></i> Deployment</h2>
+      <p class="doc-p">FLICK is a single HTML file. Deployment is as simple as uploading one file to any static host.</p>
+
+      <div class="deploy-card">
+        <div class="deploy-icon">⭐</div>
+        <div>
+          <div class="deploy-name">GitHub Pages — Recommended</div>
+          <div class="deploy-meta">Free forever. Automatic HTTPS. Deploy in under 5 minutes.<br>Rename the file to <span class="inline-code">index.html</span>, push to a public repo, and enable Pages in Settings → Pages → Source: main branch.</div>
+          <div class="deploy-badge"><span class="pill pill-green">Free</span> <span class="pill pill-lime">HTTPS included</span></div>
+        </div>
+      </div>
+
+      <div class="deploy-card">
+        <div class="deploy-icon">⚡</div>
+        <div>
+          <div class="deploy-name">Netlify</div>
+          <div class="deploy-meta">Drag-and-drop deploy. Generous free tier. Instant CDN. Just drop the HTML file on netlify.com/drop.</div>
+          <div class="deploy-badge"><span class="pill pill-green">Free tier</span></div>
+        </div>
+      </div>
+
+      <div class="deploy-card">
+        <div class="deploy-icon">▲</div>
+        <div>
+          <div class="deploy-name">Vercel</div>
+          <div class="deploy-meta">Connect your GitHub repo and Vercel auto-deploys on every push. Zero config for a static HTML file.</div>
+          <div class="deploy-badge"><span class="pill pill-green">Free tier</span></div>
+        </div>
+      </div>
+
+      <h3 class="doc-h3">Deploy to GitHub Pages</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)"><i class="ti ti-copy"></i> Copy</button></div>
+        <pre><code><span class="c-comment"># 1. Rename the file</span>
+mv FLICK_exam_platform.html index.html
+
+<span class="c-comment"># 2. Init git and push</span>
+git init
+git add index.html
+git commit -m <span class="c-string">"Launch FLICK"</span>
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/flick.git
+git push -u origin main
+
+<span class="c-comment"># 3. Enable Pages:</span>
+<span class="c-comment"># GitHub → repo Settings → Pages → Source: main → Save</span>
+<span class="c-comment"># Your site: https://YOUR_USERNAME.github.io/flick/</span></code></pre>
+      </div>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ EMAIL SETUP ══ -->
+    <section id="email">
+      <h2 class="doc-h2"><i class="ti ti-mail"></i> Email setup</h2>
+      <p class="doc-p">The current version shows an email preview modal — the host copies the code and sends it manually. To enable real email sending, integrate <strong>EmailJS</strong> (free, 200 emails/month).</p>
+
+      <div class="step-list">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body"><h4>Sign up at emailjs.com</h4><p>Create a free account. Note your <strong>Public Key</strong> from the Account tab.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><h4>Add an email service</h4><p>Go to Email Services → Add Service → Gmail → connect your Gmail account. Note the <strong>Service ID</strong>.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body"><h4>Create a template</h4><p>Create a template using variables <span class="inline-code">{{student_name}}</span>, <span class="inline-code">{{form_title}}</span>, <span class="inline-code">{{code}}</span>, <span class="inline-code">{{to_email}}</span>. Note the <strong>Template ID</strong>.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body"><h4>Add to FLICK</h4><p>Share your three IDs and I'll add the sending code directly into your FLICK file.</p></div>
+        </div>
+      </div>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- ══ FAQ ══ -->
+    <section id="faq">
+      <h2 class="doc-h2"><i class="ti ti-help-circle"></i> FAQ</h2>
+
+      <h3 class="doc-h3">Does FLICK work on mobile?</h3>
+      <p class="doc-p">FLICK is responsive and loads on mobile browsers, but gesture recognition is optimised for front-facing laptop cameras. Mobile performance depends heavily on camera quality and frame rate. We recommend desktop Chrome for the best experience.</p>
+
+      <h3 class="doc-h3">What happens if the student's camera is blocked?</h3>
+      <p class="doc-p">If camera access is denied, the gesture cam panel shows a <span class="inline-code">No camera</span> message. The exam can still be taken using the on-screen buttons — Next, Read aloud, and the option cards are all clickable.</p>
+
+      <h3 class="doc-h3">Can a host take their own exam?</h3>
+      <p class="doc-p">Yes — a host can switch to the Student portal from the same device and enter a code they generated. Sessions are stored in <span class="inline-code">localStorage</span> which is shared across the same browser.</p>
+
+      <h3 class="doc-h3">Can the same code be used twice?</h3>
+      <p class="doc-p">No. Codes are strictly single-use. Once an exam is submitted for any reason, the code status is set to <span class="inline-code">used</span> and the expiry is immediately set to <span class="inline-code">Date.now()</span>. A second attempt with the same code will show an "already used" error.</p>
+
+      <h3 class="doc-h3">Does FLICK send data to any server?</h3>
+      <p class="doc-p">In the default deployment, all data lives in <span class="inline-code">localStorage</span> on the user's device — nothing is sent to any server. The MediaPipe model runs entirely client-side. If you add EmailJS, code metadata is sent to EmailJS servers only for the purpose of delivering the email.</p>
+
+      <hr class="doc-divider">
+    </section>
+
+    <!-- NAV FOOTER -->
+    <div class="doc-nav-footer">
+      <a class="nav-foot-btn prev" href="#overview">
+        <span class="nav-foot-dir"><i class="ti ti-arrow-left"></i> Previous</span>
+        <span class="nav-foot-title">Overview</span>
+      </a>
+      <a class="nav-foot-btn next" href="#deployment" style="text-align:right;">
+        <span class="nav-foot-dir">Next <i class="ti ti-arrow-right"></i></span>
+        <span class="nav-foot-title">Deployment <i class="ti ti-arrow-right"></i></span>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function copyCode(btn){
+  const code=btn.closest('.code-block').querySelector('code');
+  navigator.clipboard.writeText(code.innerText).then(()=>{
+    btn.innerHTML='<i class="ti ti-check"></i> Copied!';
+    btn.style.color='#2DD4A0';
+    setTimeout(()=>{btn.innerHTML='<i class="ti ti-copy"></i> Copy';btn.style.color='';},2000);
+  });
+}
+
+// Active nav + section tracking
+const sections=document.querySelectorAll('section[id]');
+const navItems=document.querySelectorAll('.nav-item');
+function setActive(){
+  let cur='';
+  sections.forEach(s=>{
+    if(window.scrollY>=s.offsetTop-120) cur=s.id;
+  });
+  navItems.forEach(n=>{
+    const href=n.getAttribute('href');
+    n.classList.toggle('active', href==='#'+cur);
+  });
+}
+window.addEventListener('scroll',setActive,{passive:true});
+setActive();
+
+// Smooth scroll for nav
+navItems.forEach(n=>{
+  n.addEventListener('click',e=>{
+    const href=n.getAttribute('href');
+    if(href&&href.startsWith('#')){
+      e.preventDefault();
+      const el=document.querySelector(href);
+      if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  });
+});
+</script>
+</body>
+</html>
