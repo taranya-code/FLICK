@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLICK — One Flick. Zero Touch.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  /* FLICK brand tokens */
+  --lime:#C8F135;--lime2:#D8F85A;--lime3:rgba(200,241,53,.12);--lime4:rgba(200,241,53,.06);
+  --bg:#0A0A0F;--bg2:#14141C;--bg3:#1E1E2A;--bg4:#252535;
+  --text:#F0F0F8;--text2:#8888A4;--text3:#55556A;
+  --border:#2A2A3A;--border2:#35354A;
+  --green:#2DD4A0;--green2:rgba(45,212,160,.14);
+  --red:#F05A5A;--red2:rgba(240,90,90,.14);
+  --amber:#F0B84A;--amber2:rgba(240,184,74,.14);
+  /* legacy aliases so old code still works */
+  --purple:var(--lime);--purple2:var(--lime2);--purple3:var(--lime);--purple4:var(--lime3);
+  --color-background-primary:var(--bg2);--color-background-secondary:var(--bg3);
+  --color-background-tertiary:var(--bg);--color-text-primary:var(--text);
+  --color-text-secondary:var(--text2);--color-border-tertiary:var(--border);
+  --color-border-secondary:var(--border2);
+}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+
+/* ── PORTAL PICKER ── */
+#portal-pick{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;padding:2rem;}
+.portal-logo{font-size:2rem;font-weight:600;color:var(--purple);display:flex;align-items:center;gap:.5rem;}
+.portal-logo i{font-size:2.5rem;}
+.portal-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:100%;max-width:520px;}
+.portal-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:16px;padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:.75rem;}
+.portal-card:hover{border-color:var(--purple3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(63,50,137,.12);}
+.portal-card i{font-size:2.5rem;color:var(--purple3);}
+.portal-card h2{font-size:1rem;font-weight:600;}
+.portal-card p{font-size:12px;color:var(--text2);line-height:1.5;}
+
+/* ── NAV ── */
+.app-nav{display:flex;align-items:center;gap:0;background:var(--bg2);border-bottom:.5px solid var(--border);padding:0 1.25rem;height:50px;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:7px;font-weight:600;font-size:14px;color:var(--purple);margin-right:16px;cursor:pointer;}
+.nav-tab{padding:0 12px;height:50px;display:flex;align-items:center;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;gap:5px;white-space:nowrap;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--purple);border-bottom-color:var(--purple);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:.5rem;}
+.role-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.rb-host{background:var(--purple4);color:var(--purple);}
+.rb-student{background:var(--green2);color:var(--green);}
+
+/* ── LAYOUT ── */
+.view{display:none;padding:1.25rem;max-width:900px;margin:0 auto;}
+.view.active{display:block;}
+
+/* ── CARDS / BUTTONS ── */
+.card{background:var(--bg2);border:.5px solid var(--border);border-radius:12px;padding:1.1rem 1.3rem;}
+.btn{border:.5px solid var(--border2);background:var(--bg2);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s;color:var(--text);font-family:inherit;}
+.btn:hover{background:var(--bg3);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn-primary{background:var(--purple);color:#fff;border-color:var(--purple);}
+.btn-primary:hover:not(:disabled){background:var(--purple2);border-color:var(--purple2);}
+.btn-danger{color:var(--red);border-color:#F09595;background:#fff;}
+.btn-danger:hover{background:var(--red2);}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green);}
+.btn-green:hover{background:#0F6E56;}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.btn-xs{padding:3px 8px;font-size:11px;}
+
+input[type=text],input[type=email],input[type=number],textarea,select{border:.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:13px;background:var(--bg2);color:var(--text);font-family:inherit;width:100%;}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--purple3);}
+label{font-size:11px;color:var(--text2);font-weight:500;display:block;margin-bottom:3px;}
+.field{margin-bottom:.75rem;}
+.row{display:flex;gap:.75rem;align-items:flex-start;}
+.row>.field{flex:1;}
+
+/* ── SECTION TITLES ── */
+.sec-title{font-size:16px;font-weight:600;display:flex;align-items:center;gap:7px;margin-bottom:1rem;}
+.sec-title i{color:var(--purple3);}
+
+/* ── FORMS GRID ── */
+.forms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:.75rem;}
+.form-card{background:var(--bg2);border:.5px solid var(--border);border-radius:12px;padding:1rem;transition:border-color .15s;}
+.form-card:hover{border-color:var(--purple3);}
+.fc-title{font-size:14px;font-weight:600;margin-bottom:3px;}
+.fc-meta{font-size:11px;color:var(--text2);margin-bottom:10px;}
+.fc-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* ── BUILDER ── */
+.builder-layout{display:grid;grid-template-columns:1fr 300px;gap:1rem;align-items:start;}
+.qbc{background:var(--bg2);border:.5px solid var(--border);border-radius:10px;padding:.9rem 1rem;margin-bottom:8px;}
+.qbc-hdr{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.qi{width:100%;border:.5px solid var(--border);border-radius:7px;padding:6px 9px;font-size:13px;background:var(--bg2);color:var(--text);resize:vertical;font-family:inherit;}
+.qi:focus{outline:none;border-color:var(--purple3);}
+.opts-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px;}
+.orow{display:flex;align-items:center;gap:4px;}
+.olbl{min-width:20px;height:20px;border-radius:5px;background:var(--purple4);color:var(--purple);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.olbl.ok{background:var(--green2);color:var(--green);}
+.oinp{flex:1;border:.5px solid var(--border);border-radius:6px;padding:4px 7px;font-size:12px;background:var(--bg2);color:var(--text);font-family:inherit;}
+.oinp:focus{outline:none;border-color:var(--purple3);}
+.mkc{font-size:10px;padding:2px 6px;border-radius:20px;border:.5px solid var(--border2);background:transparent;cursor:pointer;color:var(--text2);}
+.mkc.on{background:var(--green2);color:var(--green);border-color:var(--green);}
+.builder-sidebar{display:flex;flex-direction:column;gap:10px;position:sticky;top:58px;}
+
+/* ── CODE PANEL ── */
+.code-section{background:var(--bg2);border:.5px solid var(--border);border-radius:12px;padding:1.2rem;}
+.code-big{font-size:2.5rem;font-weight:700;letter-spacing:.25em;color:var(--purple);font-variant-numeric:tabular-nums;text-align:center;margin:1rem 0;}
+.code-timer{text-align:center;font-size:12px;color:var(--text2);}
+.code-timer span{font-weight:600;color:var(--red);}
+.validity-bar{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;margin:.5rem 0;}
+.validity-fill{height:100%;background:var(--green);border-radius:2px;transition:width 1s linear;}
+.validity-fill.warn{background:var(--amber);}
+.validity-fill.crit{background:var(--red);}
+
+/* ── SESSIONS ── */
+.session-row{display:flex;align-items:center;justify-content:space-between;padding:.6rem .8rem;background:var(--bg2);border:.5px solid var(--border);border-radius:8px;margin-bottom:6px;}
+.sr-info{font-size:13px;font-weight:500;}
+.sr-meta{font-size:11px;color:var(--text2);margin-top:1px;}
+.sr-actions{display:flex;gap:5px;align-items:center;}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;}
+.dot-live{background:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,.2);}
+.dot-expired{background:#ccc;}
+.dot-used{background:var(--purple3);}
+
+/* ── EMAIL MOCK ── */
+.email-mock{background:#f9f9f9;border:.5px solid var(--border);border-radius:10px;padding:1rem;font-size:13px;line-height:1.7;}
+.email-from{color:var(--text2);font-size:12px;margin-bottom:.5rem;}
+.email-code-display{font-size:1.8rem;font-weight:700;letter-spacing:.2em;color:var(--purple);background:var(--purple4);border-radius:8px;padding:.5rem 1rem;display:inline-block;margin:.5rem 0;}
+
+/* ── STUDENT ENTRY ── */
+#student-entry{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;padding:2rem;}
+.entry-card{background:var(--bg2);border:.5px solid var(--border);border-radius:16px;padding:2rem;width:100%;max-width:400px;text-align:center;}
+.entry-card h2{font-size:1.2rem;font-weight:600;margin-bottom:.5rem;}
+.entry-card p{font-size:13px;color:var(--text2);margin-bottom:1.5rem;}
+.code-input{text-align:center;font-size:1.5rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;}
+.entry-error{color:var(--red);font-size:12px;margin-top:.5rem;min-height:18px;}
+.countdown-strip{background:var(--amber2);border:.5px solid #FAC775;border-radius:8px;padding:.5rem .75rem;font-size:12px;color:var(--amber);display:flex;align-items:center;gap:.4rem;}
+
+/* ══════════════════════════════════════
+   EXAM OVERLAY
+══════════════════════════════════════ */
+#exam-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:300;overflow-y:auto;}
+.exam-grid{display:grid;grid-template-columns:290px 1fr;min-height:100vh;}
+
+/* CAM PANEL */
+.cp{background:#0f0c1e;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;}
+.cp-hdr{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.cp-hdr-title{color:#b0aad8;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;}
+.cp-info{font-size:10px;color:#6b6494;display:flex;align-items:center;gap:4px;}
+.cam-vwrap{position:relative;flex-shrink:0;}
+#webcam{width:290px;height:218px;object-fit:cover;display:block;transform:scaleX(-1);}
+#ovc{position:absolute;top:0;left:0;width:290px;height:218px;transform:scaleX(-1);}
+
+/* AUTO-READ COUNTDOWN */
+.autoread-bar{background:rgba(127,119,221,.15);border-top:1px solid rgba(127,119,221,.2);padding:6px 12px;flex-shrink:0;}
+.ar-label{font-size:10px;color:#9d8fff;display:flex;align-items:center;justify-content:space-between;}
+.ar-progress{height:2px;background:rgba(255,255,255,.1);border-radius:1px;margin-top:4px;overflow:hidden;}
+.ar-fill{height:100%;background:#7F77DD;border-radius:1px;transition:width .1s linear;}
+
+.g-status{padding:9px 12px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;}
+.g-name-row{display:flex;align-items:center;gap:8px;}
+.g-name-text{font-size:17px;font-weight:500;color:#fff;min-height:24px;}
+.conf-ring{width:30px;height:30px;flex-shrink:0;position:relative;}
+.conf-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg);}
+.cr-bg{fill:none;stroke:rgba(255,255,255,.1);stroke-width:2.5;}
+.cr-fill{fill:none;stroke:#7F77DD;stroke-width:2.5;stroke-linecap:round;stroke-dasharray:82;stroke-dashoffset:82;transition:stroke-dashoffset .08s linear;}
+.g-sub{font-size:10px;color:#9d8fff;margin-top:2px;}
+
+.conf-meter{padding:5px 12px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;}
+.cm-label{font-size:9px;color:#6b6494;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;display:flex;justify-content:space-between;}
+.cm-bars{display:flex;gap:2px;}
+.cm-bar{height:5px;flex:1;background:rgba(255,255,255,.08);border-radius:2px;transition:background .12s;}
+.cm-bar.on{background:#7F77DD;}
+.cm-bar.full{background:#5DCAA5;}
+
+.fviz{display:flex;gap:4px;padding:6px 12px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;align-items:center;}
+.fviz-lbl{font-size:9px;color:#6b6494;text-transform:uppercase;margin-right:4px;letter-spacing:.06em;}
+.fd{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.1);transition:all .08s;}
+.fd.up{background:#7F77DD;}
+.fd.thumb.up{background:#5DCAA5;}
+
+.dwell-wrap{padding:5px 12px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;}
+.dw-row{display:flex;justify-content:space-between;margin-bottom:3px;}
+.dw-text{font-size:10px;color:#9d8fff;}
+.dw-pct{font-size:10px;color:#7F77DD;font-weight:600;}
+.dw-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+.dw-fill{height:100%;background:#7F77DD;border-radius:2px;transition:width .05s linear;}
+.dw-fill.done{background:#5DCAA5;}
+
+.g-guide{padding:8px 12px;overflow-y:auto;flex:1;}
+.gg-title{font-size:9px;color:#6b6494;text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;}
+.gi{display:flex;gap:6px;margin-bottom:5px;align-items:flex-start;}
+.gi-em{font-size:13px;min-width:20px;text-align:center;}
+.gi-t{font-size:10px;color:#b0aad8;line-height:1.4;}
+.gi-t strong{color:#ddd8ff;}
+
+/* EXAM CONTENT */
+.ec{display:flex;flex-direction:column;padding:1rem 1.1rem;gap:.8rem;}
+.ex-top{display:flex;align-items:center;justify-content:space-between;}
+.ex-title{font-size:12px;color:var(--text2);font-weight:500;}
+.ex-right{display:flex;align-items:center;gap:7px;}
+.timer-badge{background:var(--bg2);border:.5px solid var(--border);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;}
+.timer-badge.warn{color:var(--red);border-color:#F09595;}
+.pbar{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.pfill{height:100%;background:var(--purple3);border-radius:2px;transition:width .3s;}
+.qcard{background:var(--bg2);border:.5px solid var(--border);border-radius:12px;padding:1.1rem 1.3rem;}
+.qmeta{display:flex;align-items:center;gap:7px;margin-bottom:9px;}
+.qnb{font-size:10px;font-weight:600;background:var(--purple4);color:var(--purple2);padding:2px 8px;border-radius:20px;}
+.qtext{font-size:16px;line-height:1.65;font-weight:400;}
+.speak-btn{background:none;border:.5px solid var(--border);border-radius:20px;padding:3px 9px;font-size:11px;cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:3px;margin-left:auto;transition:all .15s;}
+.speak-btn:hover,.speak-btn.on{background:var(--purple4);color:var(--purple2);border-color:#AFA9EC;}
+.reading-anim{animation:pulse-purple 1s ease-in-out infinite;}
+@keyframes pulse-purple{0%,100%{opacity:1;}50%{opacity:.5;}}
+
+.opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.ocard{border-radius:10px;padding:.8rem .95rem;border:2px solid var(--border);background:var(--bg2);display:flex;align-items:center;gap:9px;transition:all .18s;cursor:default;position:relative;overflow:hidden;}
+.ocard.hov{border-color:#AFA9EC;background:#F7F6FF;}
+.ocard.sel{border-color:var(--purple3);background:var(--purple4);}
+.oletter{width:30px;height:30px;border-radius:7px;background:var(--bg3);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2);border:.5px solid var(--border);transition:all .18s;}
+.ocard.hov .oletter{background:var(--purple4);color:var(--purple2);border-color:#AFA9EC;}
+.ocard.sel .oletter{background:var(--purple3);color:#fff;border-color:var(--purple3);}
+.otext{font-size:14px;line-height:1.4;flex:1;}
+.dwell-strip{position:absolute;bottom:0;left:0;height:3px;background:var(--purple3);width:0%;transition:width .05s linear;}
+
+.hint-bar{display:flex;align-items:center;gap:7px;background:var(--bg2);border:.5px solid var(--border);border-radius:9px;padding:8px 11px;font-size:11px;flex-wrap:wrap;}
+.hi{display:flex;align-items:center;gap:3px;color:var(--text2);}
+.hdiv{width:1px;height:16px;background:var(--border);}
+
+.qnav{display:flex;gap:4px;flex-wrap:wrap;}
+.qdot{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg2);font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:600;color:var(--text2);transition:all .15s;}
+.qdot.ans{background:var(--purple4);border-color:var(--purple3);color:var(--purple2);}
+.qdot.cur{background:var(--purple);border-color:var(--purple);color:#fff;}
+
+/* TAB SWITCH WARNING */
+#tabswitch-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,12,30,.95);z-index:500;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;text-align:center;padding:2rem;}
+.tsw-icon{font-size:4rem;color:var(--red);}
+.tsw-title{font-size:1.5rem;font-weight:700;color:#fff;}
+.tsw-sub{font-size:14px;color:#9d8fff;max-width:420px;}
+.tsw-countdown{font-size:3rem;font-weight:700;color:var(--red);}
+
+/* REPORT */
+.rpt-hdr{background:var(--purple);color:#fff;border-radius:12px;padding:1.4rem 1.6rem;margin-bottom:.9rem;}
+.rpt-title{font-size:18px;font-weight:600;margin-bottom:2px;}
+.rpt-sub{font-size:11px;opacity:.75;}
+.score-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.9rem;}
+.sci{background:var(--bg2);border:.5px solid var(--border);border-radius:10px;padding:9px 11px;text-align:center;}
+.sci-v{font-size:18px;font-weight:700;}
+.sci-k{font-size:10px;color:var(--text2);margin-top:1px;}
+.pct-bar-bg{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:.9rem;}
+.pct-bar-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.qa-item{background:var(--bg2);border:.5px solid var(--border);border-radius:10px;padding:.9rem 1rem;margin-bottom:7px;}
+.qa-qnum{font-size:10px;font-weight:600;color:var(--purple2);background:var(--purple4);padding:2px 7px;border-radius:20px;display:inline-block;margin-bottom:5px;}
+.qa-qtext{font-size:13px;font-weight:600;margin-bottom:7px;line-height:1.5;}
+.qa-opts{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.qa-opt{font-size:12px;padding:5px 8px;border-radius:5px;border:.5px solid var(--border);display:flex;align-items:center;gap:5px;}
+.qa-opt.cor{background:var(--green2);border-color:var(--green);}
+.qa-opt.wrng{background:var(--red2);border-color:var(--red);}
+.qa-verdict{font-size:11px;font-weight:600;margin-top:6px;display:flex;align-items:center;gap:4px;}
+.vc{color:var(--green);}.vw{color:var(--red);}.vs{color:#888;}
+
+@media(max-width:660px){
+  .exam-grid{grid-template-columns:1fr;}
+  .cp{position:relative;height:auto;}
+  #webcam,#ovc{width:100%;max-height:220px;}
+  .builder-layout{grid-template-columns:1fr;}
+  .opts-grid,.qa-opts,.opts-row{grid-template-columns:1fr;}
+  .portal-cards{grid-template-columns:1fr;}
+  .score-strip{grid-template-columns:1fr 1fr;}
+}
+
+/* ── PERM SCREEN ── */
+#perm-screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;padding:2rem;}
+.perm-center{background:var(--bg2,#fff);border:.5px solid var(--border,#ddd);border-radius:16px;padding:2rem;width:100%;max-width:440px;}
+.perm-center h2{font-size:1.1rem;font-weight:700;margin-bottom:.35rem;}
+.perm-center p{font-size:12px;color:var(--text2,#555);margin-bottom:1.1rem;line-height:1.55;}
+.perm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:.75rem 0 1rem;}
+.pi{background:#f6f5fc;border:.5px solid #ddd;border-radius:10px;padding:.9rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.4rem;transition:all .2s;}
+.pi i{font-size:1.7rem;color:#aaa;}
+.pi .pin{font-size:12px;font-weight:600;}
+.pi .pis{font-size:11px;color:#aaa;}
+.pi.granted{border-color:#1D9E75;background:#E1F5EE;}
+.pi.granted i,.pi.granted .pis{color:#1D9E75;}
+.pi.denied{border-color:#E24B4A;background:#FCEBEB;}
+.pi.denied i,.pi.denied .pis{color:#E24B4A;}
+.info-note{background:#FAEEDA;border:.5px solid #FAC775;border-radius:8px;padding:.6rem .85rem;font-size:12px;color:#BA7517;display:flex;gap:.45rem;align-items:flex-start;line-height:1.5;margin-bottom:.9rem;}
+
+
+/* ══════════════════════════════════════
+   FLICK BRAND OVERRIDES
+══════════════════════════════════════ */
+
+/* Base overrides */
+.card{background:var(--bg2);border-color:var(--border);}
+input[type=text],input[type=email],input[type=number],textarea,select{
+  background:var(--bg3);border-color:var(--border);color:var(--text);}
+input::placeholder,textarea::placeholder{color:var(--text3);}
+input:focus,textarea:focus,select:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(200,241,53,.1);}
+label{color:var(--text2);}
+
+/* ── FLICK LOGO WORDMARK ── */
+.flick-wordmark{
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:700;font-size:1.4rem;letter-spacing:.06em;
+  color:var(--text);display:flex;align-items:center;gap:.35rem;cursor:pointer;
+}
+.flick-wordmark .fw-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--lime);
+  display:inline-block;margin-bottom:2px;flex-shrink:0;
+}
+.flick-tagline{font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;}
+
+/* ── PORTAL SCREEN ── */
+.screen{background:var(--bg);}
+.portal-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--text);font-size:2rem;letter-spacing:.04em;}
+.portal-logo i{color:var(--lime);}
+.portal-card{
+  background:var(--bg2);border-color:var(--border);
+  border-radius:16px;position:relative;overflow:hidden;
+}
+.portal-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--lime);transform:scaleX(0);transform-origin:left;
+  transition:transform .3s ease;
+}
+.portal-card:hover::before{transform:scaleX(1);}
+.portal-card:hover{border-color:var(--border2);transform:translateY(-3px);
+  box-shadow:0 16px 40px rgba(0,0,0,.4);}
+.portal-card i{color:var(--lime);}
+.portal-card h2{color:var(--text);font-family:'Space Grotesk',sans-serif;}
+.portal-card p{color:var(--text2);}
+
+/* ── BUTTONS ── */
+.btn{
+  background:var(--bg3);border-color:var(--border2);color:var(--text);
+  font-family:'Inter',sans-serif;font-weight:500;
+}
+.btn:hover{background:var(--bg4);border-color:var(--border2);}
+.btn-primary{
+  background:var(--lime);color:#0A0A0F;border-color:var(--lime);font-weight:700;
+}
+.btn-primary:hover:not(:disabled){background:var(--lime2);border-color:var(--lime2);}
+.btn-green{background:var(--green);color:#0A0A0F;border-color:var(--green);font-weight:700;}
+.btn-green:hover:not(:disabled){background:#25C090;}
+.btn-danger{background:transparent;color:var(--red);border-color:rgba(240,90,90,.35);}
+.btn-danger:hover{background:var(--red2);}
+
+/* ── NAV ── */
+.app-nav{background:rgba(10,10,15,.85);backdrop-filter:blur(12px);border-bottom-color:var(--border);}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.06em;color:var(--text);}
+.nav-tab{color:var(--text2);}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--lime);border-bottom-color:var(--lime);}
+.role-badge{font-family:'Space Grotesk',sans-serif;}
+.rb-host{background:var(--lime3);color:var(--lime);}
+.rb-student{background:var(--green2);color:var(--green);}
+
+/* ── SECTION TITLES ── */
+.sec-title i{color:var(--lime);}
+.sec-title{font-family:'Space Grotesk',sans-serif;color:var(--text);}
+
+/* ── FORM CARDS ── */
+.form-card{background:var(--bg2);border-color:var(--border);}
+.form-card:hover{border-color:var(--lime);}
+.fc-title{font-family:'Space Grotesk',sans-serif;color:var(--text);}
+.fc-meta{color:var(--text2);}
+
+/* ── BUILDER ── */
+.qbc{background:var(--bg2);border-color:var(--border);}
+.qnbadge{background:var(--lime3);color:var(--lime);}
+.qi{background:var(--bg3);border-color:var(--border);color:var(--text);}
+.qi:focus{border-color:var(--lime);}
+.olbl{background:var(--lime3);color:var(--lime);}
+.olbl.ok{background:var(--green2);color:var(--green);}
+.oinp{background:var(--bg3);border-color:var(--border);color:var(--text);}
+.oinp:focus{border-color:var(--lime);}
+.mkc{background:transparent;border-color:var(--border2);color:var(--text2);}
+.mkc.on{background:var(--green2);color:var(--green);border-color:var(--green);}
+
+/* ── SESSIONS ── */
+.session-row{background:var(--bg2);border-color:var(--border);}
+.code-chip{background:var(--lime3);color:var(--lime);font-weight:700;}
+.validity-fill{background:var(--green);}
+.validity-fill.warn{background:var(--amber);}
+.validity-fill.crit{background:var(--red);}
+.dot-live{background:var(--green);box-shadow:0 0 0 3px rgba(45,212,160,.2);}
+.dot-used{background:var(--lime);}
+.dot-expired{background:var(--text3);}
+
+/* ── EMAIL MODAL ── */
+.modal-backdrop{background:rgba(10,10,15,.7);backdrop-filter:blur(6px);}
+.modal-box{background:var(--bg2);border:.5px solid var(--border);}
+.email-mock{background:var(--bg3);border-color:var(--border);}
+.email-from{color:var(--text2);border-bottom-color:var(--border);}
+.email-code-display{background:var(--lime3);color:var(--lime);font-family:'Space Grotesk',sans-serif;letter-spacing:.2em;}
+.email-rules{background:var(--amber2);border-color:var(--amber);color:var(--amber);}
+
+/* ── PERM SCREEN ── */
+.perm-center{background:var(--bg2);border-color:var(--border);}
+.perm-center h2{color:var(--text);font-family:'Space Grotesk',sans-serif;}
+.perm-center p{color:var(--text2);}
+.pi{background:var(--bg3);border-color:var(--border);}
+.pi i{color:var(--text3);}
+.pi .pin{color:var(--text);}
+.pi .pis{color:var(--text3);}
+.pi.granted{border-color:var(--green);background:var(--green2);}
+.pi.granted i,.pi.granted .pis{color:var(--green);}
+.pi.denied{border-color:var(--red);background:var(--red2);}
+.pi.denied i,.pi.denied .pis{color:var(--red);}
+.info-note{background:var(--amber2);border-color:rgba(240,184,74,.35);color:var(--amber);}
+#pi-err{color:var(--red);}
+
+/* ── ENTRY CARD ── */
+.center-card{background:var(--bg2);border-color:var(--border);}
+.center-card h2{color:var(--text);font-family:'Space Grotesk',sans-serif;}
+.center-card p{color:var(--text2);}
+#s-error{color:var(--red);}
+
+/* ── EXAM OVERLAY ── */
+#exam-overlay{background:var(--bg);}
+
+/* ── CAM PANEL — already dark, minor tweaks ── */
+.cp{background:#080810;}
+.cp-hdr{border-bottom-color:rgba(255,255,255,.06);}
+.cp-hdr-title{color:var(--lime);letter-spacing:.1em;}
+.autoread-bar{background:rgba(200,241,53,.08);border-top-color:rgba(200,241,53,.15);}
+.ar-label{color:rgba(200,241,53,.7);}
+.ar-fill{background:var(--lime);}
+.g-name-text{font-family:'Space Grotesk',sans-serif;}
+.cr-fill{stroke:var(--lime);}
+.cm-bar.on{background:var(--lime);opacity:.6;}
+.cm-bar.full{background:var(--lime);}
+.fd.up{background:var(--lime);}
+.fd.thumb.up{background:var(--green);}
+.dw-fill{background:var(--lime);}
+.dw-fill.done{background:var(--green);}
+
+/* ── EXAM CONTENT ── */
+.timer-badge{background:var(--bg2);border-color:var(--border);color:var(--text);font-family:'Space Grotesk',sans-serif;}
+.timer-badge.warn{color:var(--red);border-color:rgba(240,90,90,.4);}
+.pfill{background:var(--lime);}
+.qcard{background:var(--bg2);border-color:var(--border);}
+.qnb{background:var(--lime3);color:var(--lime);}
+.qtext{color:var(--text);font-family:'Space Grotesk',sans-serif;font-weight:500;}
+.speak-btn{background:transparent;border-color:var(--border2);color:var(--text2);}
+.speak-btn:hover,.speak-btn.on{background:var(--lime3);color:var(--lime);border-color:rgba(200,241,53,.4);}
+
+/* ── OPTION CARDS ── */
+.ocard{background:var(--bg2);border-color:var(--border);}
+.ocard.hov{border-color:rgba(200,241,53,.5);background:var(--lime4);}
+.ocard.sel{border-color:var(--lime);background:var(--lime3);}
+.oletter{background:var(--bg3);color:var(--text2);border-color:var(--border);}
+.ocard.hov .oletter{background:var(--lime3);color:var(--lime);border-color:rgba(200,241,53,.4);}
+.ocard.sel .oletter{background:var(--lime);color:#0A0A0F;border-color:var(--lime);}
+.otext{color:var(--text);}
+.dwell-strip{background:var(--lime);}
+
+/* HINT BAR */
+.hint-bar{background:var(--bg2);border-color:var(--border);}
+.hi{color:var(--text2);}
+.hdiv{background:var(--border);}
+
+/* NAV DOTS */
+.qdot{background:var(--bg2);border-color:var(--border);color:var(--text2);}
+.qdot.ans{background:var(--lime3);border-color:rgba(200,241,53,.5);color:var(--lime);}
+.qdot.cur{background:var(--lime);border-color:var(--lime);color:#0A0A0F;}
+
+/* ── REPORT ── */
+.rpt-hdr{background:linear-gradient(135deg,#0A0A0F 0%,#1a1a2a 100%);border:.5px solid var(--border);color:var(--text);}
+.rpt-title{font-family:'Space Grotesk',sans-serif;color:var(--text);}
+.sci{background:var(--bg2);border-color:var(--border);}
+.sci-v{font-family:'Space Grotesk',sans-serif;}
+.sci-k{color:var(--text2);}
+.pct-bar-bg{background:var(--bg3);}
+.qa-item{background:var(--bg2);border-color:var(--border);}
+.qa-qnum{background:var(--lime3);color:var(--lime);}
+.qa-qtext{color:var(--text);font-family:'Space Grotesk',sans-serif;}
+.qa-opt{background:var(--bg3);border-color:var(--border);color:var(--text);}
+.qa-opt.cor{background:var(--green2);border-color:rgba(45,212,160,.4);}
+.qa-opt.wrng{background:var(--red2);border-color:rgba(240,90,90,.4);}
+.vc{color:var(--green);}.vw{color:var(--red);}.vs{color:var(--text3);}
+
+/* TAB SWITCH */
+#tsw-overlay{background:rgba(8,8,16,.97);}
+.tsw-title{font-family:'Space Grotesk',sans-serif;}
+
+/* select dropdown dark */
+select option{background:var(--bg3);color:var(--text);}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--lime);opacity:.5;}
+
+
+/* ══ FLICK SIGNATURE ANIMATIONS ══ */
+@keyframes flick-glow{
+  0%,100%{box-shadow:0 0 0 0 rgba(200,241,53,0);}
+  50%{box-shadow:0 0 20px 4px rgba(200,241,53,.15);}
+}
+@keyframes flick-slide-up{
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes flick-pulse{
+  0%,100%{opacity:1;} 50%{opacity:.6;}
+}
+@keyframes lime-ping{
+  0%{transform:scale(1);opacity:.8;}
+  100%{transform:scale(2.2);opacity:0;}
+}
+
+.screen.active > *{animation:flick-slide-up .35s ease both;}
+.screen.active > *:nth-child(2){animation-delay:.06s;}
+.screen.active > *:nth-child(3){animation-delay:.12s;}
+
+/* Live dot pulse */
+.dot-live::after{
+  content:'';position:absolute;width:100%;height:100%;border-radius:50%;
+  background:var(--green);animation:lime-ping 1.4s ease infinite;
+}
+.status-dot{position:relative;}
+
+/* Option card hover lift */
+.ocard{transition:border-color .18s, background .18s, transform .15s;}
+.ocard.hov{transform:translateY(-1px);}
+.ocard.sel{transform:translateY(-1px);}
+
+/* Lime glow on selected option */
+.ocard.sel{box-shadow:0 0 0 1px rgba(200,241,53,.3), 0 4px 20px rgba(200,241,53,.08);}
+
+/* Code chip glow */
+.code-chip{
+  font-family:'Space Grotesk',monospace;
+  box-shadow:0 0 12px rgba(200,241,53,.15);
+}
+
+/* Perm item transition */
+.pi{transition:all .3s ease;}
+.pi.granted{box-shadow:0 0 16px rgba(45,212,160,.15);}
+
+/* Button shine on primary */
+.btn-primary{position:relative;overflow:hidden;}
+.btn-primary::after{
+  content:'';position:absolute;top:-50%;left:-75%;width:50%;height:200%;
+  background:rgba(255,255,255,.15);transform:skewX(-20deg);
+  transition:left .4s ease;
+}
+.btn-primary:hover::after{left:125%;}
+
+/* Portal card icon pulse */
+.portal-card:hover i{animation:flick-pulse .8s ease infinite;}
+
+/* Score big number */
+.sci-v{font-family:'Space Grotesk',sans-serif;}
+
+/* Qtext display font */
+.qtext{font-family:'Space Grotesk',sans-serif;font-weight:500;line-height:1.6;}
+
+/* Builder sidebar card */
+.builder-sidebar .card{border-color:var(--border);}
+
+/* Forms grid empty state */
+#host-forms-grid p{color:var(--text2);}
+
+/* Hint bar icons lime */
+.hint-bar i{color:var(--lime);}
+
+/* Timer font */
+.ex-title{color:var(--text2);font-size:11px;letter-spacing:.06em;text-transform:uppercase;}
+#ex-qctr{font-family:'Space Grotesk',sans-serif;color:var(--text2);}
+
+/* Report pct bar */
+.pct-bar-fill{transition:width .8s cubic-bezier(.34,1.56,.64,1);}
+
+/* Validity bar */
+.validity-bar{margin-top:4px;}
+
+/* Subtle grid texture on bg */
+body::before{
+  content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+  background-image:radial-gradient(rgba(200,241,53,.03) 1px, transparent 1px);
+  background-size:32px 32px;pointer-events:none;z-index:0;
+}
+.screen,.app-nav,.exam-grid,#exam-overlay,.modal-backdrop>*{position:relative;z-index:1;}
+
+/* FLICK footer watermark on screens */
+.screen::after{
+  content:'FLICK · One Flick. Zero Touch.';
+  position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);
+  font-size:10px;color:rgba(136,136,164,.35);letter-spacing:.12em;
+  text-transform:uppercase;font-family:'Space Grotesk',sans-serif;
+  pointer-events:none;white-space:nowrap;
+}
+
+/* Form title input placeholder */
+#b-title::placeholder{color:var(--text3);}
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     PORTAL SELECTOR
+══════════════════════════════════════ -->
+<div id="portal-pick">
+  <div class="portal-logo" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:2.2rem;letter-spacing:.05em;color:#F0F0F8;display:flex;align-items:center;gap:.4rem;"><span style="color:#C8F135;">F</span>LICK<span style="width:8px;height:8px;border-radius:50%;background:#C8F135;display:inline-block;margin-bottom:4px;flex-shrink:0;"></span></div>
+  <p style="color:#8888A4;font-size:12px;letter-spacing:.12em;text-transform:uppercase;">One Flick. Zero Touch.</p>
+  <p style="color:var(--text2);font-size:14px;text-align:center;">Select your role to continue</p>
+  <div class="portal-cards">
+    <div class="portal-card" onclick="enterPortal('host')">
+      <div style="width:56px;height:56px;border-radius:14px;background:var(--lime3);border:.5px solid rgba(200,241,53,.25);display:flex;align-items:center;justify-content:center;font-size:1.6rem;">👩‍🏫</div>
+      <h2>Teacher / Host</h2>
+      <p>Create exam forms, generate access codes, send to students, and view results.</p>
+    </div>
+    <div class="portal-card" onclick="enterPortal('student')">
+      <div style="width:56px;height:56px;border-radius:14px;background:var(--lime3);border:.5px solid rgba(200,241,53,.25);display:flex;align-items:center;justify-content:center;font-size:1.6rem;">🎓</div>
+      <h2>Student</h2>
+      <p>Enter your access code received by email and take the gesture-controlled exam.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     HOST PORTAL
+══════════════════════════════════════ -->
+<div id="host-portal" style="display:none;">
+  <nav class="app-nav">
+    <div class="nav-logo" onclick="backToPortal()"><i class="ti ti-hand-finger"></i> FLICK</div>
+    <div class="nav-tab active" id="ht-forms" onclick="hTab('forms')"><i class="ti ti-files"></i> Forms</div>
+    <div class="nav-tab" id="ht-builder" onclick="hTab('builder')"><i class="ti ti-plus"></i> Builder</div>
+    <div class="nav-tab" id="ht-sessions" onclick="hTab('sessions')"><i class="ti ti-key"></i> Codes</div>
+    <div class="nav-tab" id="ht-results" onclick="hTab('results')" style="display:none;"><i class="ti ti-chart-bar"></i> Results</div>
+    <div class="nav-right"><span style="font-size:10px;color:var(--text3);font-family:'Space Grotesk',sans-serif;letter-spacing:.06em;text-transform:uppercase;">v1.0</span><span class="role-badge rb-host">👆 Host</span><button class="btn btn-sm" onclick="backToPortal()"><i class="ti ti-arrow-left"></i> Switch</button></div>
+  </nav>
+
+  <!-- FORMS -->
+  <div class="view active" id="h-forms">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
+      <div class="sec-title" style="margin-bottom:0;"><i class="ti ti-files"></i> My Exam Forms</div>
+      <button class="btn btn-primary btn-sm" onclick="hTab('builder')"><i class="ti ti-plus"></i> New Form</button>
+    </div>
+    <div class="forms-grid" id="host-forms-grid"></div>
+  </div>
+
+  <!-- BUILDER -->
+  <div class="view" id="h-builder">
+    <div class="sec-title" style="font-family:'Space Grotesk',sans-serif;"><i class="ti ti-edit"></i> <span id="bm-lbl">New Exam Form</span></div>
+    <div class="builder-layout">
+      <div>
+        <div id="bq-list"></div>
+        <button class="btn btn-sm" onclick="bAddQ()"><i class="ti ti-plus"></i> Add Question</button>
+      </div>
+      <div class="builder-sidebar">
+        <div class="card">
+          <div class="field"><label>Form Title *</label><input type="text" id="b-title" placeholder="e.g. Python Module 5 Quiz"></div>
+          <div class="field"><label>Description</label><textarea id="b-desc" rows="2" placeholder="Optional..."></textarea></div>
+          <div class="field"><label>Duration (minutes)</label><input type="number" id="b-dur" value="10" min="1" max="180"></div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button class="btn btn-primary" onclick="bSave()"><i class="ti ti-device-floppy"></i> Save Form</button>
+            <button class="btn btn-sm" onclick="bClear()"><i class="ti ti-x"></i> Clear</button>
+          </div>
+        </div>
+        <div class="card" style="font-size:11px;color:var(--text2);line-height:1.65;">
+          <strong style="color:var(--text);">Tips</strong><br>
+          Mark one correct answer per question. All 4 options required. Save form then generate access codes from the Sessions tab.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SESSIONS -->
+  <div class="view" id="h-sessions">
+    <div class="sec-title"><i class="ti ti-key"></i> <span style="font-family:'Space Grotesk',sans-serif;">Access Codes</span></div>
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="row">
+        <div class="field">
+          <label>Select Form</label>
+          <select id="sess-form-pick"></select>
+        </div>
+        <div class="field">
+          <label>Student Email</label>
+          <input type="email" id="sess-email" placeholder="student@example.com">
+        </div>
+        <div class="field">
+          <label>Student Name</label>
+          <input type="text" id="sess-name" placeholder="Student name">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="generateCode()"><i class="ti ti-send"></i> Generate Code & Send Email</button>
+    </div>
+
+    <div class="sec-title" style="font-size:14px;"><i class="ti ti-list"></i> Active Sessions</div>
+    <div id="sess-list"><p style="color:var(--text2);font-size:13px;">No sessions yet.</p></div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="view" id="h-results">
+    <div class="sec-title"><i class="ti ti-chart-bar"></i> <span style="font-family:'Space Grotesk',sans-serif;">Results</span></div>
+    <div id="results-content"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     STUDENT PORTAL
+══════════════════════════════════════ -->
+<div id="student-portal" style="display:none;">
+  <!-- ENTRY SCREEN -->
+  <div id="student-entry">
+    <div class="portal-logo"><i class="ti ti-hand-finger"></i> FLICK</div>
+    <div class="entry-card">
+      <h2>Enter Your Access Code</h2>
+      <p>Your teacher sent a 6-character code to your email. Enter it below to begin.</p>
+      <div class="field">
+        <label>Your Name</label>
+        <input type="text" id="s-name" placeholder="Enter your name">
+      </div>
+      <div class="field">
+        <label>Access Code</label>
+        <input type="text" id="s-code" class="code-input" maxlength="6" placeholder="——————" oninput="this.value=this.value.toUpperCase()">
+        <div class="entry-error" id="s-error"></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="studentEnter()">
+        <i class="ti ti-player-play"></i> Enter Exam
+      </button>
+      <div style="margin-top:.75rem;">
+        <button class="btn btn-sm" onclick="backToPortal()" style="width:100%;justify-content:center;"><i class="ti ti-arrow-left"></i> Back</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDENT RESULT (shown after exam) -->
+  <div id="student-result" style="display:none;padding:1.25rem;max-width:800px;margin:0 auto;">
+    <div class="sec-title"><i class="ti ti-chart-bar"></i> <span style="font-family:'Space Grotesk',sans-serif;">Your Result</span></div>
+    <div class="rpt-hdr"><div class="rpt-title" id="sr-title">—</div><div class="rpt-sub" id="sr-sub">—</div></div>
+    <div class="score-strip" id="sr-strip"></div>
+    <div class="pct-bar-bg"><div class="pct-bar-fill" id="sr-pbar" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:14px;font-weight:600;">Question Review & Answer Key</div>
+      <button class="btn btn-primary btn-sm" id="sr-dl"><i class="ti ti-download"></i> Download Report</button>
+    </div>
+    <div id="sr-qa"></div>
+    <button class="btn btn-sm" style="margin-top:1rem;" onclick="backToPortal()"><i class="ti ti-arrow-left"></i> Back to Portal</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     EMAIL MODAL
+══════════════════════════════════════ -->
+<div id="email-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.45);z-index:400;display:none;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--bg2);border-radius:14px;padding:1.5rem;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+      <div style="font-size:15px;font-weight:600;"><i class="ti ti-mail" style="color:var(--purple3);"></i> Email Preview</div>
+      <button class="btn btn-sm" onclick="closeEmailModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="email-preview"></div>
+    <div style="margin-top:1rem;display:flex;gap:.5rem;justify-content:flex-end;">
+      <button class="btn btn-sm" onclick="closeEmailModal()">Close</button>
+      <button class="btn btn-primary btn-sm" onclick="closeEmailModal();hTab('sessions')"><i class="ti ti-check"></i> Code Sent!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TAB SWITCH WARNING
+══════════════════════════════════════ -->
+<div id="tabswitch-overlay">
+  <div class="tsw-icon"><i class="ti ti-alert-triangle"></i></div>
+  <div class="tsw-title">You left the exam!</div>
+  <div class="tsw-sub">Switching tabs or windows is not allowed. Your exam will be automatically submitted.</div>
+  <div class="tsw-countdown" id="tsw-count">3</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     EXAM OVERLAY
+══════════════════════════════════════ -->
+<div id="exam-overlay">
+  <div class="exam-grid">
+    <!-- CAM PANEL -->
+    <div class="cp">
+      <div class="cp-hdr">
+        <span class="cp-hdr-title" style="font-family:'Space Grotesk',sans-serif;color:#C8F135;">👆 FLICK CAM</span>
+        <span class="cp-info" id="cp-student-name"></span>
+      </div>
+      <div class="cam-vwrap">
+        <video id="webcam" autoplay playsinline muted></video>
+        <canvas id="ovc"></canvas>
+      </div>
+
+      <!-- AUTO-READ PROGRESS -->
+      <div class="autoread-bar">
+        <div class="ar-label"><span>Auto-read in</span><span id="ar-countdown">3s</span></div>
+        <div class="ar-progress"><div class="ar-fill" id="ar-fill" style="width:100%"></div></div>
+      </div>
+
+      <div class="g-status">
+        <div class="g-name-row">
+          <div class="conf-ring">
+            <svg width="30" height="30" viewBox="0 0 30 30"><circle class="cr-bg" cx="15" cy="15" r="13"/><circle class="cr-fill" id="cr-fill" cx="15" cy="15" r="13"/></svg>
+          </div>
+          <span class="g-name-text" id="g-name-text">—</span>
+        </div>
+        <div class="g-sub" id="g-sub">Show your hand to the camera</div>
+      </div>
+
+      <div class="conf-meter">
+        <div class="cm-label"><span>Stability</span><span id="stab-pct"></span></div>
+        <div class="cm-bars" id="cm-bars">
+          <div class="cm-bar"></div><div class="cm-bar"></div><div class="cm-bar"></div>
+          <div class="cm-bar"></div><div class="cm-bar"></div><div class="cm-bar"></div>
+          <div class="cm-bar"></div><div class="cm-bar"></div>
+        </div>
+      </div>
+
+      <div class="fviz">
+        <span class="fviz-lbl">Fingers</span>
+        <div class="fd thumb" id="ef0"></div><div class="fd" id="ef1"></div>
+        <div class="fd" id="ef2"></div><div class="fd" id="ef3"></div><div class="fd" id="ef4"></div>
+      </div>
+
+      <div class="dwell-wrap">
+        <div class="dw-row"><span class="dw-text" id="dw-text">Dwell progress</span><span class="dw-pct" id="dw-pct"></span></div>
+        <div class="dw-bar"><div class="dw-fill" id="dw-fill" style="width:0%"></div></div>
+      </div>
+
+      <div class="g-guide">
+        <div class="gg-title" style="color:#C8F135;font-family:'Space Grotesk',sans-serif;font-weight:600;">Gesture Reference</div>
+        <div class="gi"><span class="gi-em">☝️</span><div class="gi-t"><strong>1 finger</strong> → Option A (hold 1.5s)</div></div>
+        <div class="gi"><span class="gi-em">✌️</span><div class="gi-t"><strong>2 fingers</strong> → Option B (hold 1.5s)</div></div>
+        <div class="gi"><span class="gi-em">🤟</span><div class="gi-t"><strong>3 fingers</strong> → Option C (hold 1.5s)</div></div>
+        <div class="gi"><span class="gi-em">🖐️</span><div class="gi-t"><strong>4 fingers</strong> → Option D (hold 1.5s)</div></div>
+        <div class="gi"><span class="gi-em">✊</span><div class="gi-t"><strong>Fist</strong> → Confirm instantly</div></div>
+        <div class="gi"><span class="gi-em">👍</span><div class="gi-t"><strong>Thumb up</strong> → Next question</div></div>
+        <div class="gi"><span class="gi-em">👎</span><div class="gi-t"><strong>Thumb down</strong> → Previous</div></div>
+        <div class="gi"><span class="gi-em">🤙</span><div class="gi-t"><strong>Pinky only</strong> → Read aloud</div></div>
+        <div class="gi"><span class="gi-em">🖖</span><div class="gi-t"><strong>All 5 fingers, hold 3s</strong> → Submit</div></div>
+      </div>
+    </div>
+
+    <!-- EXAM CONTENT -->
+    <div class="ec">
+      <div class="ex-top">
+        <span class="ex-title" id="ex-form-title">Exam</span>
+        <div class="ex-right">
+          <span id="ex-qctr" style="font-size:12px;font-weight:600;">Q1/5</span>
+          <span class="timer-badge" id="ex-timer">10:00</span>
+        </div>
+      </div>
+      <div class="pbar"><div class="pfill" id="ex-pfill" style="width:20%"></div></div>
+      <div class="qcard">
+        <div class="qmeta">
+          <span class="qnb" id="ex-qbadge">Question 1</span>
+          <button class="speak-btn" id="ex-speak" onclick="speakQ(true)"><i class="ti ti-volume"></i> Read aloud</button>
+        </div>
+        <p class="qtext" id="ex-qtext">—</p>
+      </div>
+      <div class="opts-grid" id="ex-opts"></div>
+      <div class="hint-bar">
+        <div class="hi"><i class="ti ti-hand-finger"></i> Hold 1.5s to select</div>
+        <div class="hdiv"></div>
+        <div class="hi"><i class="ti ti-thumb-up"></i> Thumb up = next</div>
+        <div class="hdiv"></div>
+        <div class="hi"><i class="ti ti-hand-stop"></i> All-5 hold 3s = submit</div>
+        <button class="btn btn-primary btn-sm" style="margin-left:auto;" onclick="nextQ()">Next <i class="ti ti-arrow-right"></i></button>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text2);margin-bottom:4px;">Navigator</div>
+        <div class="qnav" id="ex-nav"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+<script>
+/* ══════════════════════════════════════
+   DATA STORE (localStorage-backed)
+══════════════════════════════════════ */
+const DB = {
+  get forms(){ return JSON.parse(localStorage.getItem('ge_forms')||'[]'); },
+  set forms(v){ localStorage.setItem('ge_forms',JSON.stringify(v)); },
+  get sessions(){ return JSON.parse(localStorage.getItem('ge_sessions')||'[]'); },
+  set sessions(v){ localStorage.setItem('ge_sessions',JSON.stringify(v)); },
+  get results(){ return JSON.parse(localStorage.getItem('ge_results')||'[]'); },
+  set results(v){ localStorage.setItem('ge_results',JSON.stringify(v)); }
+};
+
+const L=['A','B','C','D'];
+
+/* ══════════════════════════════════════
+   PORTAL ROUTING
+══════════════════════════════════════ */
+function enterPortal(role){
+  document.getElementById('portal-pick').style.display='none';
+  if(role==='host'){
+    document.getElementById('host-portal').style.display='block';
+    renderHostForms(); renderSessions();
+  } else {
+    document.getElementById('student-portal').style.display='block';
+  }
+}
+function backToPortal(){
+  ['host-portal','student-portal'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('portal-pick').style.display='flex';
+  document.getElementById('student-entry').style.display='flex';
+  document.getElementById('student-result').style.display='none';
+}
+
+/* ══════════════════════════════════════
+   HOST — TAB SWITCHING
+══════════════════════════════════════ */
+function hTab(t){
+  ['forms','builder','sessions','results'].forEach(tab=>{
+    document.getElementById('h-'+tab)?.classList.remove('active');
+    document.getElementById('ht-'+tab)?.classList.remove('active');
+  });
+  document.getElementById('h-'+t)?.classList.add('active');
+  document.getElementById('ht-'+t)?.classList.add('active');
+  if(t==='sessions'){ populateSessionFormPick(); renderSessions(); }
+  if(t==='forms') renderHostForms();
+}
+
+/* ══════════════════════════════════════
+   HOST — FORM BUILDER
+══════════════════════════════════════ */
+let bq=[], bEditIdx=null;
+
+function bAddQ(qd){
+  const idx=bq.length;
+  const q=qd||{text:'',opts:['','','',''],ans:0};
+  bq.push(q);
+  const el=document.createElement('div');
+  el.className='qbc'; el.id='bqc-'+idx;
+  el.innerHTML=`<div class="qbc-hdr"><span class="qnbadge" style="font-size:10px;font-weight:600;background:var(--purple4);color:var(--purple2);padding:2px 7px;border-radius:20px;">Q${idx+1}</span><button class="btn btn-danger btn-xs" onclick="bRemQ(${idx})"><i class="ti ti-trash"></i></button></div>
+    <textarea class="qi" rows="2" placeholder="Question text..." oninput="bq[${idx}].text=this.value">${esc(q.text)}</textarea>
+    <div class="opts-row">${q.opts.map((o,i)=>`
+      <div class="orow">
+        <div class="olbl${q.ans===i?' ok':''}" id="bll-${idx}-${i}">${L[i]}</div>
+        <input class="oinp" placeholder="Option ${L[i]}" value="${esc(o)}" oninput="bq[${idx}].opts[${i}]=this.value">
+        <button class="mkc${q.ans===i?' on':''}" id="bmc-${idx}-${i}" onclick="bSetAns(${idx},${i})">✓</button>
+      </div>`).join('')}
+    </div>`;
+  document.getElementById('bq-list').appendChild(el);
+}
+function bSetAns(qi,oi){
+  bq[qi].ans=oi;
+  for(let i=0;i<4;i++){
+    document.getElementById(`bll-${qi}-${i}`).className='olbl'+(i===oi?' ok':'');
+    document.getElementById(`bmc-${qi}-${i}`).className='mkc'+(i===oi?' on':'');
+  }
+}
+function bRemQ(idx){
+  bq.splice(idx,1);
+  document.getElementById('bq-list').innerHTML='';
+  const tmp=bq.slice(); bq=[];
+  tmp.forEach(q=>bAddQ(JSON.parse(JSON.stringify(q))));
+}
+function bClear(){
+  bq=[]; bEditIdx=null;
+  document.getElementById('bq-list').innerHTML='';
+  ['b-title','b-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('b-dur').value='10';
+  document.getElementById('bm-lbl').textContent='Create New Form';
+}
+function bSave(){
+  const title=document.getElementById('b-title').value.trim();
+  if(!title){alert('Enter a form title.');return;}
+  if(!bq.length){alert('Add at least one question.');return;}
+  for(let i=0;i<bq.length;i++){
+    if(!bq[i].text.trim()){alert(`Q${i+1} is empty.`);return;}
+    if(bq[i].opts.some(o=>!o.trim())){alert(`Fill all 4 options for Q${i+1}.`);return;}
+  }
+  const forms=DB.forms;
+  const form={id:bEditIdx!==null?forms[bEditIdx].id:Date.now(),title,
+    desc:document.getElementById('b-desc').value.trim(),
+    duration:parseInt(document.getElementById('b-dur').value)||10,
+    created:new Date().toLocaleDateString(),
+    questions:JSON.parse(JSON.stringify(bq))};
+  if(bEditIdx!==null) forms[bEditIdx]=form; else forms.push(form);
+  DB.forms=forms; bClear(); hTab('forms');
+}
+function bEdit(idx){
+  const f=DB.forms[idx]; bEditIdx=idx;
+  document.getElementById('b-title').value=f.title;
+  document.getElementById('b-desc').value=f.desc||'';
+  document.getElementById('b-dur').value=f.duration||10;
+  document.getElementById('bm-lbl').textContent='Edit Form';
+  bq=[]; document.getElementById('bq-list').innerHTML='';
+  f.questions.forEach(q=>bAddQ(JSON.parse(JSON.stringify(q))));
+  hTab('builder');
+}
+function bDelete(idx){
+  if(!confirm('Delete this form?')) return;
+  const forms=DB.forms; forms.splice(idx,1); DB.forms=forms; renderHostForms();
+}
+
+function renderHostForms(){
+  const forms=DB.forms;
+  const g=document.getElementById('host-forms-grid');
+  if(!forms.length){g.innerHTML='<p style="color:var(--text2);font-size:13px;">No forms yet.</p>';return;}
+  g.innerHTML=forms.map((f,i)=>`
+    <div class="form-card">
+      <div class="fc-title">${esc(f.title)}</div>
+      <div class="fc-meta">${f.questions.length} questions · ${f.duration} min · ${f.created}</div>
+      ${f.desc?`<div style="font-size:11px;color:var(--text2);margin-bottom:7px;">${esc(f.desc)}</div>`:''}
+      <div class="fc-actions">
+        <button class="btn btn-primary btn-sm" onclick="hostGenerateFor(${i})"><i class="ti ti-key"></i> Generate Code</button>
+        <button class="btn btn-sm" onclick="bEdit(${i})"><i class="ti ti-edit"></i> Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="bDelete(${i})"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════
+   HOST — SESSION / CODE SYSTEM
+══════════════════════════════════════ */
+const CODE_VALIDITY_MS = 20 * 60 * 1000; // 20 minutes
+
+function genCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous chars
+  let c='';
+  for(let i=0;i<6;i++) c+=chars[Math.floor(Math.random()*chars.length)];
+  return c;
+}
+
+function populateSessionFormPick(){
+  const sel=document.getElementById('sess-form-pick');
+  const forms=DB.forms;
+  sel.innerHTML=forms.length?forms.map((f,i)=>`<option value="${i}">${esc(f.title)}</option>`).join(''):'<option value="">No forms yet</option>';
+}
+
+function hostGenerateFor(formIdx){
+  hTab('sessions');
+  setTimeout(()=>{
+    document.getElementById('sess-form-pick').value=formIdx;
+  },50);
+}
+
+function generateCode(){
+  const formIdx=parseInt(document.getElementById('sess-form-pick').value);
+  const email=document.getElementById('sess-email').value.trim();
+  const name=document.getElementById('sess-name').value.trim();
+  const forms=DB.forms;
+  if(!forms.length||isNaN(formIdx)){alert('No form selected.');return;}
+  if(!email){alert('Enter student email.');return;}
+  if(!name){alert('Enter student name.');return;}
+
+  const form=forms[formIdx];
+  const code=genCode();
+  const session={
+    id:Date.now(), code, formId:form.id, formTitle:form.title,
+    studentEmail:email, studentName:name,
+    createdAt:Date.now(), expiresAt:Date.now()+CODE_VALIDITY_MS,
+    status:'pending', usedAt:null, result:null
+  };
+  const sessions=DB.sessions; sessions.push(session); DB.sessions=sessions;
+
+  showEmailModal(session, form);
+  renderSessions();
+  document.getElementById('sess-email').value='';
+  document.getElementById('sess-name').value='';
+}
+
+function showEmailModal(session, form){
+  const expiresIn='20 minutes';
+  document.getElementById('email-preview').innerHTML=`
+    <div class="email-mock">
+      <div class="email-from">From: <strong>FLICK Platform</strong> &lt;noreply@gestureexam.edu&gt;<br>
+      To: <strong>${esc(session.studentEmail)}</strong><br>
+      Subject: <strong>Your Exam Access Code — ${esc(form.title)}</strong></div>
+      <hr style="border:none;border-top:.5px solid var(--border);margin:.75rem 0;">
+      <p>Hi <strong>${esc(session.studentName)}</strong>,</p>
+      <br>
+      <p>Your teacher has scheduled a gesture-controlled exam for you.</p>
+      <br>
+      <p><strong>Exam:</strong> ${esc(form.title)}<br>
+      <strong>Duration:</strong> ${form.duration} minutes<br>
+      <strong>Questions:</strong> ${form.questions.length}<br>
+      <strong>Code valid for:</strong> ${expiresIn} from generation</p>
+      <br>
+      <p>Your one-time access code:</p>
+      <div class="email-code-display">${session.code}</div>
+      <br>
+      <p>⚠️ <strong>Important rules:</strong></p>
+      <ul style="margin:.5rem 0 .5rem 1.25rem;font-size:12px;line-height:1.8;">
+        <li>Code is valid for 20 minutes only</li>
+        <li>Exam starts immediately when code is entered</li>
+        <li>Do NOT switch tabs or windows during the exam</li>
+        <li>Switching tabs will auto-submit your exam</li>
+        <li>Camera and microphone must remain on</li>
+      </ul>
+      <br>
+      <p>Good luck!</p>
+    </div>`;
+  document.getElementById('email-modal').style.display='flex';
+}
+function closeEmailModal(){ document.getElementById('email-modal').style.display='none'; }
+
+let sessTickInterval=null;
+function renderSessions(){
+  const sessions=DB.sessions;
+  const el=document.getElementById('sess-list');
+  if(!sessions.length){el.innerHTML='<p style="color:var(--text2);font-size:13px;">No sessions yet.</p>';return;}
+  // clear old interval
+  if(sessTickInterval) clearInterval(sessTickInterval);
+
+  function render(){
+    const now=Date.now();
+    el.innerHTML=[...sessions].reverse().map((s,revIdx)=>{
+      const idx=sessions.length-1-revIdx;
+      const remaining=s.expiresAt-now;
+      const isExpired=now>s.expiresAt;
+      const mins=Math.max(0,Math.floor(remaining/60000));
+      const secs=Math.max(0,Math.floor((remaining%60000)/1000));
+      const pct=Math.max(0,remaining/CODE_VALIDITY_MS*100);
+      let statusHtml='';
+      if(s.status==='used') statusHtml=`<span style="color:var(--purple2);font-size:11px;"><span class="status-dot dot-used"></span>Completed</span>`;
+      else if(isExpired) statusHtml=`<span style="color:var(--text3);font-size:11px;"><span class="status-dot dot-expired"></span>Expired</span>`;
+      else statusHtml=`<span style="color:var(--green);font-size:11px;"><span class="status-dot dot-live"></span>Live — ${mins}m ${secs.toString().padStart(2,'0')}s</span>`;
+      const validityBarClass=pct>50?'':pct>20?'warn':'crit';
+      return `<div class="session-row">
+        <div>
+          <div class="sr-info">${esc(s.studentName)} &mdash; <code style="font-size:13px;font-weight:700;color:var(--purple);letter-spacing:.1em;">${s.code}</code></div>
+          <div class="sr-meta">${esc(s.formTitle)} · ${esc(s.studentEmail)}</div>
+          ${!isExpired&&s.status!=='used'?`<div style="margin-top:4px;"><div class="validity-bar" style="height:3px;"><div class="validity-fill ${validityBarClass}" style="width:${pct}%"></div></div></div>`:''}
+          ${s.result?`<div style="font-size:11px;color:var(--purple2);margin-top:3px;">Score: <strong>${s.result.pct}%</strong> (${s.result.correct}/${s.result.correct+s.result.wrong+s.result.skip} correct)</div>`:''}
+        </div>
+        <div class="sr-actions">
+          ${statusHtml}
+          ${s.result?`<button class="btn btn-sm btn-xs" onclick="viewResult(${idx})"><i class="ti ti-eye"></i></button>`:''}
+          <button class="btn btn-danger btn-xs" onclick="deleteSession(${idx})"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  render();
+  sessTickInterval=setInterval(render,1000);
+}
+
+function deleteSession(idx){
+  const sessions=DB.sessions; sessions.splice(idx,1); DB.sessions=sessions; renderSessions();
+}
+
+function viewResult(idx){
+  const s=DB.sessions[idx];
+  const forms=DB.forms;
+  const form=forms.find(f=>f.id===s.formId);
+  if(!form||!s.result) return;
+  document.getElementById('ht-results').style.display='';
+  hTab('results');
+  buildReportDOM('results-content',form,s.result,s.studentName,s.studentEmail);
+}
+
+/* ══════════════════════════════════════
+   STUDENT — CODE ENTRY
+══════════════════════════════════════ */
+
+/* ─ Pending state between code entry and exam start ─ */
+let _pForm=null,_pSession=null,_pIdx=null,_pStream=null;
+
+function studentEnter(){
+  const code=document.getElementById('s-code').value.trim().toUpperCase();
+  const name=document.getElementById('s-name').value.trim();
+  const errEl=document.getElementById('s-error');
+  errEl.textContent='';
+  if(!name){errEl.textContent='Please enter your name.';return;}
+  if(code.length!==6){errEl.textContent='Code must be 6 characters.';return;}
+  const sessions=DB.sessions;
+  const idx=sessions.findIndex(s=>s.code===code);
+  if(idx===-1){errEl.textContent='Invalid code. Check your email and try again.';return;}
+  const session=sessions[idx];
+  const now=Date.now();
+  if(now>session.expiresAt){errEl.textContent='Code expired (20 min limit). Ask your teacher for a new one.';return;}
+  if(session.status!=='pending'){errEl.textContent='This code has already been used.';return;}
+  const forms=DB.forms;
+  const form=forms.find(f=>f.id===session.formId);
+  if(!form){errEl.textContent='Exam form not found. Contact your teacher.';return;}
+  // Save pending state — do NOT mark active yet, do NOT start timer yet
+  _pForm=form; _pSession=session; _pIdx=idx;
+  _pSession.studentName=name;
+  // Show permission screen
+  document.getElementById('student-entry').style.display='none';
+  resetPermScreen();
+  document.getElementById('perm-screen').style.display='flex';
+}
+
+function backToEntry(){
+  document.getElementById('perm-screen').style.display='none';
+  document.getElementById('student-entry').style.display='flex';
+  if(_pStream){_pStream.getTracks().forEach(t=>t.stop());_pStream=null;}
+}
+
+function resetPermScreen(){
+  ['cam','mic'].forEach(k=>{
+    document.getElementById('pi-'+k).className='pi';
+    document.getElementById('pi-'+k+'-st').textContent='Not granted';
+  });
+  document.getElementById('pi-err').textContent='';
+  const rb=document.getElementById('pi-req-btn');
+  rb.style.display='';rb.disabled=false;
+  rb.innerHTML='<i class="ti ti-shield-check"></i> Request Camera & Mic';
+  document.getElementById('pi-start-btn').style.display='none';
+  if(_pStream){_pStream.getTracks().forEach(t=>t.stop());_pStream=null;}
+}
+
+async function doRequestPermissions(){
+  const errEl=document.getElementById('pi-err');
+  errEl.textContent='';
+  const btn=document.getElementById('pi-req-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader"></i> Requesting...';
+  try{
+    _pStream=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'},audio:true});
+    ['cam','mic'].forEach(k=>{
+      document.getElementById('pi-'+k).className='pi granted';
+      document.getElementById('pi-'+k+'-st').textContent='Granted ✓';
+    });
+    btn.style.display='none';
+    document.getElementById('pi-start-btn').style.display='';
+  }catch(e){
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-shield-check"></i> Request Camera & Mic';
+    if(e.name==='NotAllowedError'){
+      errEl.textContent='Permissions denied. Click the camera icon in your browser address bar → Allow → then try again.';
+    }else if(e.name==='NotFoundError'){
+      errEl.textContent='No camera/microphone found. Connect devices and try again.';
+    }else{
+      errEl.textContent='Error: '+e.message;
+    }
+    ['cam','mic'].forEach(k=>{
+      document.getElementById('pi-'+k).className='pi denied';
+      document.getElementById('pi-'+k+'-st').textContent='Denied ✗';
+    });
+  }
+}
+
+function beginExamNow(){
+  if(!_pStream){alert('Please grant permissions first.');return;}
+  if(!_pForm||!_pSession){backToEntry();return;}
+  // Mark session active only NOW (timer hasn't started yet)
+  const sessions=DB.sessions;
+  sessions[_pIdx].status='active';
+  sessions[_pIdx].usedAt=Date.now();
+  sessions[_pIdx].studentName=_pSession.studentName;
+  DB.sessions=sessions;
+  document.getElementById('perm-screen').style.display='none';
+  // Launch exam, passing the already-granted stream — no new permission dialog will appear!
+  launchExamFull(_pForm, _pSession, _pIdx, _pStream);
+  _pStream=null;  // ownership transferred
+}
+
+
+/* ══════════════════════════════════════
+   EXAM STATE
+══════════════════════════════════════ */
+let EX={
+  form:null, sessionIdx:null, answers:[], q:0,
+  timer:null, timeLeft:0,
+  autoReadTimer:null, autoReadStart:0,
+  tabViolated:false
+};
+let streamRef=null, mpHands=null, mpCam=null;
+
+function launchExamFull(form, session, sessionIdx, existingStream){
+  EX.form=form; EX.sessionIdx=sessionIdx;
+  EX.answers=new Array(form.questions.length).fill(null);
+  EX.q=0; EX.timeLeft=form.duration*60; EX.tabViolated=false;
+  document.getElementById('exam-overlay').style.display='block';
+  document.getElementById('ex-form-title').textContent=form.title;
+  document.getElementById('cp-sname').textContent=session.studentName||'';
+  GE.reset();
+  renderExQ();
+  startExTimer();
+  initTabGuard();
+  initMP(existingStream); // pass stream — no popup!
+}
+
+/* kept for backward compatibility */
+function launchExam(form, session, sessionIdx){
+  EX.form=form; EX.sessionIdx=sessionIdx;
+  EX.answers=new Array(form.questions.length).fill(null);
+  EX.q=0; EX.timeLeft=form.duration*60; EX.tabViolated=false;
+
+  document.getElementById('exam-overlay').style.display='block';
+  document.getElementById('ex-form-title').textContent=form.title;
+  document.getElementById('cp-student-name').textContent=session.studentName;
+
+  GE.reset();
+  renderExQ();
+  startExTimer();
+  initTabGuard();
+  initMP();
+}
+
+/* ══════════════════════════════════════
+   EXAM — QUESTION RENDERING
+══════════════════════════════════════ */
+function renderExQ(){
+  const q=EX.form.questions[EX.q];
+  document.getElementById('ex-qtext').textContent=q.text;
+  document.getElementById('ex-qbadge').textContent=`Question ${EX.q+1}`;
+  document.getElementById('ex-qctr').textContent=`Q${EX.q+1}/${EX.form.questions.length}`;
+  document.getElementById('ex-pfill').style.width=`${((EX.q+1)/EX.form.questions.length)*100}%`;
+  GE.hovOpt=null; GE.dwellGesture=null; GE.dwellStart=0;
+
+  document.getElementById('ex-opts').innerHTML=q.opts.map((o,i)=>`
+    <div class="ocard${EX.answers[EX.q]===i?' sel':''}" id="eo-${i}">
+      <div class="oletter">${L[i]}</div>
+      <div class="otext">${esc(o)}</div>
+    </div>`).join('');
+
+  renderExNav();
+  startAutoRead();
+}
+
+function renderExNav(){
+  document.getElementById('ex-nav').innerHTML=EX.form.questions.map((_,i)=>`
+    <div class="qdot${i===EX.q?' cur':EX.answers[i]!==null?' ans':''}" onclick="jumpQ(${i})">${i+1}</div>`).join('');
+}
+
+/* ══════════════════════════════════════
+   AUTO-READ SYSTEM (3 second countdown)
+══════════════════════════════════════ */
+function startAutoRead(){
+  cancelAutoRead();
+  const fill=document.getElementById('ar-fill');
+  const lbl=document.getElementById('ar-countdown');
+  fill.style.width='100%';
+  lbl.textContent='3s';
+  let elapsed=0;
+  const DURATION=3000;
+  EX.autoReadStart=Date.now();
+  EX.autoReadTimer=setInterval(()=>{
+    elapsed+=100;
+    const pct=100-Math.min(100,(elapsed/DURATION)*100);
+    fill.style.width=pct+'%';
+    const secs=Math.max(0,Math.ceil((DURATION-elapsed)/1000));
+    lbl.textContent=secs>0?secs+'s':'🔊';
+    if(elapsed>=DURATION){
+      cancelAutoRead();
+      speakQ(false); // auto-triggered
+    }
+  },100);
+}
+
+function cancelAutoRead(){
+  if(EX.autoReadTimer){ clearInterval(EX.autoReadTimer); EX.autoReadTimer=null; }
+}
+
+/* ══════════════════════════════════════
+   SPEECH
+══════════════════════════════════════ */
+function speakQ(manual=true){
+  if(!window.speechSynthesis) return;
+  if(manual) cancelAutoRead();
+  window.speechSynthesis.cancel();
+  const q=EX.form.questions[EX.q];
+  const txt=`Question ${EX.q+1}. ${q.text}. Options: A: ${q.opts[0]}. B: ${q.opts[1]}. C: ${q.opts[2]}. D: ${q.opts[3]}.`;
+  const u=new SpeechSynthesisUtterance(txt); u.rate=0.86;
+  const btn=document.getElementById('ex-speak');
+  btn.classList.add('on','reading-anim');
+  btn.innerHTML='<i class="ti ti-volume"></i> Reading...';
+  u.onend=()=>{
+    btn.classList.remove('on','reading-anim');
+    btn.innerHTML='<i class="ti ti-volume"></i> Read aloud';
+  };
+  window.speechSynthesis.speak(u);
+}
+
+function nextQ(){
+  cancelAutoRead();
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  if(EX.q<EX.form.questions.length-1){EX.q++;renderExQ();}
+  else submitExam('completed');
+}
+function prevQ(){
+  cancelAutoRead();
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  if(EX.q>0){EX.q--;renderExQ();}
+}
+function jumpQ(i){
+  cancelAutoRead();
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  EX.q=i; renderExQ();
+}
+
+/* ══════════════════════════════════════
+   TAB SWITCH GUARD
+══════════════════════════════════════ */
+function initTabGuard(){
+  document.addEventListener('visibilitychange', onVisibilityChange);
+  window.addEventListener('blur', onWindowBlur);
+}
+function removeTabGuard(){
+  document.removeEventListener('visibilitychange', onVisibilityChange);
+  window.removeEventListener('blur', onWindowBlur);
+}
+function onVisibilityChange(){
+  if(document.hidden && document.getElementById('exam-overlay').style.display!=='none'){
+    triggerTabViolation();
+  }
+}
+function onWindowBlur(){
+  if(document.getElementById('exam-overlay').style.display!=='none'){
+    triggerTabViolation();
+  }
+}
+function triggerTabViolation(){
+  if(EX.tabViolated) return;
+  EX.tabViolated=true;
+  cancelAutoRead();
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  const overlay=document.getElementById('tabswitch-overlay');
+  overlay.style.display='flex';
+  let count=3;
+  document.getElementById('tsw-count').textContent=count;
+  const iv=setInterval(()=>{
+    count--;
+    document.getElementById('tsw-count').textContent=count;
+    if(count<=0){
+      clearInterval(iv);
+      overlay.style.display='none';
+      submitExam('tab-switch');
+    }
+  },1000);
+}
+
+/* ══════════════════════════════════════
+   EXAM TIMER
+══════════════════════════════════════ */
+function startExTimer(){
+  if(EX.timer) clearInterval(EX.timer);
+  EX.timer=setInterval(()=>{
+    EX.timeLeft--;
+    const m=Math.floor(EX.timeLeft/60).toString().padStart(2,'0');
+    const s=(EX.timeLeft%60).toString().padStart(2,'0');
+    const b=document.getElementById('ex-timer');
+    b.textContent=`${m}:${s}`;
+    b.className='timer-badge'+(EX.timeLeft<60?' warn':'');
+    if(EX.timeLeft<=0){clearInterval(EX.timer);submitExam('timeout');}
+  },1000);
+}
+
+/* ══════════════════════════════════════
+   SUBMIT
+══════════════════════════════════════ */
+function submitExam(reason='completed'){
+  clearInterval(EX.timer); cancelAutoRead(); removeTabGuard();
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  stopMP();
+  document.getElementById('exam-overlay').style.display='none';
+  document.getElementById('tabswitch-overlay').style.display='none';
+
+  let cor=0,wrg=0,skp=0;
+  EX.form.questions.forEach((q,i)=>{
+    if(EX.answers[i]===null) skp++;
+    else if(EX.answers[i]===q.ans) cor++;
+    else wrg++;
+  });
+  const pct=Math.round((cor/EX.form.questions.length)*100);
+  const result={date:new Date().toLocaleString(),correct:cor,wrong:wrg,skip:skp,pct,answers:EX.answers.slice(),reason};
+
+  // Save to session
+  const sessions=DB.sessions;
+  if(EX.sessionIdx!==null){
+    sessions[EX.sessionIdx].status='used';
+    sessions[EX.sessionIdx].result=result;
+    // Also expire the code immediately
+    sessions[EX.sessionIdx].expiresAt=Date.now();
+    DB.sessions=sessions;
+  }
+
+  const msg=reason==='tab-switch'?`Exam auto-submitted: you switched tabs. Score: ${pct}%.`
+    :reason==='timeout'?`Time up! Score: ${pct}%.`
+    :`Exam submitted. You scored ${pct} percent.`;
+  window.speechSynthesis?.speak(new SpeechSynthesisUtterance(msg));
+
+  // Show result to student
+  buildReportDOM_student(EX.form, result);
+}
+
+/* ══════════════════════════════════════
+   OPTION INTERACTION
+══════════════════════════════════════ */
+function setHover(i){
+  document.querySelectorAll('.ocard').forEach(c=>c.classList.remove('hov'));
+  if(i!==null) document.getElementById('eo-'+i)?.classList.add('hov');
+  GE.hovOpt=i;
+}
+function selectOpt(i){
+  if(i===null||i===undefined) return;
+  EX.answers[EX.q]=EX.answers[EX.q]===i?null:i;
+  renderExQ();
+}
+
+/* ══════════════════════════════════════
+   GESTURE ENGINE (Robust v2)
+══════════════════════════════════════ */
+const GE={
+  WINDOW:10, history:[], stableGesture:null,
+  dwellGesture:null, dwellStart:0,
+  DWELL_MS:1500, SUBMIT_MS:3000, NAV_MS:600,
+  lastActionTime:0, COOLDOWN:1400, hovOpt:null,
+
+  reset(){
+    this.history=[];this.stableGesture=null;
+    this.dwellGesture=null;this.dwellStart=0;this.hovOpt=null;
+    const df=document.getElementById('dw-fill');
+    if(df){df.style.width='0%';}
+  },
+
+  push(label,states){
+    const now=Date.now();
+    this.history.push(label);
+    if(this.history.length>this.WINDOW) this.history.shift();
+    const counts={};
+    this.history.forEach(h=>counts[h]=(counts[h]||0)+1);
+    const best=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+    const stab=best?best[1]/this.WINDOW:0;
+
+    // Stability bars
+    const bars=document.querySelectorAll('.cm-bar');
+    const barN=Math.round(stab*bars.length);
+    bars.forEach((b,i)=>b.className='cm-bar'+(i<barN?(barN===bars.length?' full':' on'):''));
+    const stabEl=document.getElementById('stab-pct');
+    if(stabEl) stabEl.textContent=Math.round(stab*100)+'%';
+
+    const stableLabel=stab>=0.7?best[0]:'none';
+    this.stableGesture=stableLabel;
+
+    // Finger viz
+    if(states) states.forEach((up,i)=>{
+      const d=document.getElementById('ef'+i);
+      if(d) d.className='fd'+(i===0?' thumb':'')+(up?' up':'');
+    });
+
+    // Conf ring
+    const cr=document.getElementById('cr-fill');
+    if(cr){
+      const C=82;
+      cr.style.strokeDashoffset=C-(C*stab);
+      cr.style.stroke=stab>=0.8?'#5DCAA5':stab>=0.5?'#7F77DD':'#3a2f6e';
+    }
+
+    const gnt=document.getElementById('g-name-text');
+    const gsb=document.getElementById('g-sub');
+    if(gnt) gnt.textContent=stableLabel==='none'?'—':this.display(stableLabel);
+    if(gsb) gsb.textContent=this.sub(stableLabel);
+
+    if(now-this.lastActionTime<this.COOLDOWN) return;
+    this.processDwell(stableLabel,now);
+  },
+
+  processDwell(label,now){
+    if(['next','prev','speak'].includes(label)){
+      if(label!==this.dwellGesture){this.dwellGesture=label;this.dwellStart=now;}
+      const el=(now-this.dwellStart)/this.NAV_MS;
+      this.showDwell(el,false);
+      if(now-this.dwellStart>this.NAV_MS){
+        this.fire(label); this.lastActionTime=now; this.dwellGesture=null;
+      }
+      return;
+    }
+    if(label==='submit'){
+      if(label!==this.dwellGesture){this.dwellGesture=label;this.dwellStart=now;}
+      const el=(now-this.dwellStart)/this.SUBMIT_MS;
+      this.showDwell(el,true);
+      const dwt=document.getElementById('dw-text');
+      if(dwt) dwt.textContent=`Hold to submit... ${Math.round(el*100)}%`;
+      if(now-this.dwellStart>this.SUBMIT_MS){
+        this.fire('submit'); this.lastActionTime=now; this.dwellGesture=null;
+      }
+      return;
+    }
+    const optMap={opt0:0,opt1:1,opt2:2,opt3:3};
+    if(optMap[label]!==undefined){
+      const oi=optMap[label];
+      setHover(oi);
+      if(label!==this.dwellGesture){this.dwellGesture=label;this.dwellStart=now;}
+      const el=(now-this.dwellStart)/this.DWELL_MS;
+      this.showDwell(el,false);
+      const card=document.getElementById('eo-'+oi);
+      if(card){
+        let strip=card.querySelector('.dwell-strip');
+        if(!strip){strip=document.createElement('div');strip.className='dwell-strip';card.appendChild(strip);}
+        strip.style.width=Math.min(100,el*100)+'%';
+      }
+      const dwt=document.getElementById('dw-text');
+      if(dwt) dwt.textContent=`Selecting ${L[oi]}...`;
+      if(now-this.dwellStart>this.DWELL_MS){
+        selectOpt(oi);
+        this.lastActionTime=now+200;
+        this.dwellGesture=null;
+        document.querySelectorAll('.dwell-strip').forEach(s=>s.style.width='0%');
+        const dff=document.getElementById('dw-fill');
+        if(dff) dff.style.width='0%';
+      }
+      return;
+    }
+    if(label==='confirm'){
+      if(this.hovOpt!==null){selectOpt(this.hovOpt);this.lastActionTime=now+200;this.hovOpt=null;}
+      this.dwellGesture=null; return;
+    }
+    this.dwellGesture=null; this.dwellStart=0;
+    document.querySelectorAll('.dwell-strip').forEach(s=>s.style.width='0%');
+    const dff=document.getElementById('dw-fill');
+    if(dff){dff.style.width='0%';dff.className='dw-fill';}
+    const dwt=document.getElementById('dw-text');
+    if(dwt) dwt.textContent='Dwell progress';
+    const dwp=document.getElementById('dw-pct');
+    if(dwp) dwp.textContent='';
+    setHover(null);
+  },
+
+  showDwell(el,isSubmit){
+    const pct=Math.min(100,el*100);
+    const fill=document.getElementById('dw-fill');
+    if(!fill) return;
+    fill.style.width=pct+'%';
+    fill.style.background=isSubmit?'#E24B4A':'#7F77DD';
+    fill.className='dw-fill'+(pct>=99?' done':'');
+    const dwp=document.getElementById('dw-pct');
+    if(dwp) dwp.textContent=Math.round(pct)+'%';
+  },
+
+  fire(action){
+    if(action==='next'){cancelAutoRead();if(window.speechSynthesis)window.speechSynthesis.cancel();nextQ();return;}
+    if(action==='prev'){cancelAutoRead();if(window.speechSynthesis)window.speechSynthesis.cancel();prevQ();return;}
+    if(action==='speak'){speakQ(true);return;}
+    if(action==='submit'){cancelAutoRead();submitExam('completed');return;}
+  },
+
+  display(l){
+    return{opt0:'Option A',opt1:'Option B',opt2:'Option C',opt3:'Option D',confirm:'Confirm ✊',next:'Next →',prev:'← Prev',speak:'Read Aloud 🔊',submit:'Submit 🖖'}[l]||l;
+  },
+  sub(l){
+    return{none:'No gesture detected',opt0:'Option A — hold 1.5s',opt1:'Option B — hold 1.5s',opt2:'Option C — hold 1.5s',opt3:'Option D — hold 1.5s',confirm:'Fist — confirm hover',next:'Thumb up — going next',prev:'Thumb down — going back',speak:'Pinky only — reading...',submit:'All 5 — hold 3s to submit'}[l]||'Detected';
+  }
+};
+
+/* ══════════════════════════════════════
+   GESTURE CLASSIFIER (strict, non-overlapping)
+══════════════════════════════════════ */
+function classifyLM(lm){
+  function ext(tip,pip){return lm[tip].y<lm[pip].y-0.03;}
+  const thumbExt=Math.abs(lm[4].x-lm[2].x)>0.05;
+  const i=ext(8,6),m=ext(12,10),r=ext(16,14),p=ext(20,18);
+  const thumbUp=lm[4].y<lm[3].y-0.05&&!i&&!m&&!r&&!p;
+  const thumbDn=lm[4].y>lm[3].y+0.05&&!i&&!m&&!r&&!p;
+  const pinkyOnly=p&&!i&&!m&&!r&&!thumbExt;
+  const allFive=thumbExt&&i&&m&&r&&p;
+  const fist=!thumbExt&&!i&&!m&&!r&&!p;
+  if(thumbUp)   return{label:'next',   states:[false,false,false,false,false]};
+  if(thumbDn)   return{label:'prev',   states:[false,false,false,false,false]};
+  if(pinkyOnly) return{label:'speak',  states:[false,false,false,false,true]};
+  if(allFive)   return{label:'submit', states:[true,true,true,true,true]};
+  if(fist)      return{label:'confirm',states:[false,false,false,false,false]};
+  if(i&&!m&&!r&&!p)           return{label:'opt0',states:[false,true,false,false,false]};
+  if(i&&m&&!r&&!p)            return{label:'opt1',states:[false,true,true,false,false]};
+  if(i&&m&&r&&!p)             return{label:'opt2',states:[false,true,true,true,false]};
+  if(i&&m&&r&&p&&!thumbExt)   return{label:'opt3',states:[false,true,true,true,true]};
+  return{label:'none',states:[false,false,false,false,false]};
+}
+
+/* ══════════════════════════════════════
+   MEDIAPIPE
+══════════════════════════════════════ */
+async function initMP(existingStream){
+  const video=document.getElementById('webcam');
+  const canvas=document.getElementById('ovc');
+  const ctx=canvas.getContext('2d');
+   if(existingStream){ streamRef=existingStream; video.srcObject=existingStream; }
+  else { try{ streamRef=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'},audio:true}); video.srcObject=streamRef; }catch(e){
+    document.getElementById('g-name-text').textContent='No camera';
+    document.getElementById('g-sub').textContent='Use on-screen buttons';
+    return;
+  }}
+  if(typeof Hands==='undefined'){
+    document.getElementById('g-name-text').textContent='MediaPipe offline';
+    document.getElementById('g-sub').textContent='Use on-screen buttons';
+    return;
+  }
+  mpHands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
+  mpHands.setOptions({maxNumHands:1,modelComplexity:1,minDetectionConfidence:0.7,minTrackingConfidence:0.65});
+  mpHands.onResults(res=>{
+    canvas.width=video.videoWidth||290;
+    canvas.height=video.videoHeight||218;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(res.multiHandLandmarks&&res.multiHandLandmarks.length>0){
+      const lm=res.multiHandLandmarks[0];
+      drawConnectors(ctx,lm,HAND_CONNECTIONS,{color:'rgba(127,119,221,.5)',lineWidth:2});
+      drawLandmarks(ctx,lm,{color:'#7F77DD',fillColor:'rgba(238,237,254,.85)',lineWidth:1,radius:3});
+      const g=classifyLM(lm); GE.push(g.label,g.states);
+    } else {
+      GE.push('none',null);
+      const gnt=document.getElementById('g-name-text');
+      const gsb=document.getElementById('g-sub');
+      if(gnt) gnt.textContent='—';
+      if(gsb) gsb.textContent='No hand detected';
+      setHover(null);
+    }
+  });
+  mpCam=new Camera(video,{onFrame:async()=>{await mpHands.send({image:video});},width:640,height:480});
+  mpCam.start();
+}
+function stopMP(){
+  if(mpCam){try{mpCam.stop();}catch(e){} mpCam=null;}
+  if(streamRef){streamRef.getTracks().forEach(t=>t.stop());streamRef=null;}
+  GE.reset();
+}
+
+/* ══════════════════════════════════════
+   REPORT BUILDING
+══════════════════════════════════════ */
+function buildReportDOM(containerId, form, result, studentName, email){
+  const el=document.getElementById(containerId);
+  const pct=result.pct;
+  const bc=pct>=75?'var(--green)':pct>=50?'var(--purple3)':'var(--red)';
+  const reasonBadge=result.reason==='tab-switch'?'<span style="background:var(--red2);color:var(--red);font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px;"><i class="ti ti-alert-triangle"></i> Tab switch detected</span>'
+    :result.reason==='timeout'?'<span style="background:var(--amber2);color:var(--amber);font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px;"><i class="ti ti-clock"></i> Timed out</span>':'';
+  el.innerHTML=`
+    <div class="rpt-hdr"><div class="rpt-title">${esc(form.title)} ${reasonBadge}</div>
+    <div class="rpt-sub">${studentName} · ${email} · ${result.date}</div></div>
+    <div class="score-strip">
+      <div class="sci"><div class="sci-v" style="color:var(--purple2)">${pct}%</div><div class="sci-k">Score</div></div>
+      <div class="sci"><div class="sci-v" style="color:var(--green)">${result.correct}</div><div class="sci-k">Correct</div></div>
+      <div class="sci"><div class="sci-v" style="color:var(--red)">${result.wrong}</div><div class="sci-k">Wrong</div></div>
+      <div class="sci"><div class="sci-v" style="color:#888">${result.skip}</div><div class="sci-k">Skipped</div></div>
+    </div>
+    <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:${pct}%;background:${bc}"></div></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px;">Question Review & Answer Key</div>
+    ${qaHTML(form,result)}`;
+}
+
+function buildReportDOM_student(form, result){
+  document.getElementById('sr-title').textContent=form.title;
+  document.getElementById('sr-sub').textContent=`Submitted: ${result.date}${result.reason!=='completed'?` · ${result.reason==='tab-switch'?'Auto-submitted: tab switch':'Timed out'}`:''}`;
+  const pct=result.pct;
+  const bc=pct>=75?'var(--green)':pct>=50?'var(--purple3)':'var(--red)';
+  document.getElementById('sr-pbar').style.cssText=`width:${pct}%;background:${bc}`;
+  document.getElementById('sr-strip').innerHTML=`
+    <div class="sci"><div class="sci-v" style="color:var(--purple2)">${pct}%</div><div class="sci-k">Score</div></div>
+    <div class="sci"><div class="sci-v" style="color:var(--green)">${result.correct}</div><div class="sci-k">Correct</div></div>
+    <div class="sci"><div class="sci-v" style="color:var(--red)">${result.wrong}</div><div class="sci-k">Wrong</div></div>
+    <div class="sci"><div class="sci-v" style="color:#888">${result.skip}</div><div class="sci-k">Skipped</div></div>`;
+  document.getElementById('sr-qa').innerHTML=qaHTML(form,result);
+  document.getElementById('sr-dl').onclick=()=>downloadReport(form,result);
+  document.getElementById('student-result').style.display='block';
+}
+
+function qaHTML(form,result){
+  return form.questions.map((q,i)=>{
+    const ua=result.answers[i],ca=q.ans;
+    const isSkip=ua===null||ua===undefined,isOk=ua===ca;
+    const verdict=isSkip?`<div class="qa-verdict vs"><i class="ti ti-minus"></i> Skipped — correct: <strong>${L[ca]}</strong></div>`
+      :isOk?`<div class="qa-verdict vc"><i class="ti ti-check"></i> Correct</div>`
+      :`<div class="qa-verdict vw"><i class="ti ti-x"></i> Wrong — correct: <strong>${L[ca]}</strong></div>`;
+    const opts=q.opts.map((o,j)=>{
+      let cls='qa-opt';
+      let ic='';
+      if(j===ca){cls+=' cor';ic='<i class="ti ti-check" style="color:var(--green);flex-shrink:0;"></i>';}
+      else if(j===ua&&!isOk){cls+=' wrng';ic='<i class="ti ti-x" style="color:var(--red);flex-shrink:0;"></i>';}
+      else ic='<span style="width:14px;flex-shrink:0;display:inline-block;"></span>';
+      return`<div class="${cls}">${ic}<span><strong>${L[j]}.</strong> ${esc(o)}</span></div>`;
+    }).join('');
+    return`<div class="qa-item"><div class="qa-qnum">Q${i+1}</div><div class="qa-qtext">${esc(q.text)}</div><div class="qa-opts">${opts}</div>${verdict}</div>`;
+  }).join('');
+}
+
+function downloadReport(form,result){
+  const pct=result.pct,bc=pct>=75?'#1D9E75':pct>=50?'#7F77DD':'#E24B4A';
+  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Report – ${esc(form.title)}</title>
+<style>body{font-family:system-ui,sans-serif;max-width:740px;margin:32px auto;padding:0 16px;color:#111;}
+.hdr{background:#3C3489;color:#fff;border-radius:10px;padding:18px 22px;margin-bottom:14px;}
+h1{font-size:18px;font-weight:700;margin-bottom:2px;}.sub{font-size:11px;opacity:.75;}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px;}
+.sc{border:1px solid #ddd;border-radius:8px;padding:9px;text-align:center;}
+.scv{font-size:18px;font-weight:700;}.sck{font-size:10px;color:#666;}
+.pbar{height:5px;background:#eee;border-radius:3px;margin-bottom:14px;overflow:hidden;}
+.pfill{height:100%;border-radius:3px;}
+.qa{border:1px solid #ddd;border-radius:8px;padding:11px 13px;margin-bottom:7px;}
+.qb{font-size:10px;font-weight:700;background:#EEEDFE;color:#534AB7;padding:1px 6px;border-radius:20px;display:inline-block;margin-bottom:5px;}
+.qt{font-size:13px;font-weight:600;margin-bottom:7px;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.opt{font-size:11px;padding:4px 7px;border-radius:5px;border:1px solid #ddd;}
+.opt.c{background:#E1F5EE;border-color:#1D9E75;}.opt.w{background:#FCEBEB;border-color:#E24B4A;}
+.v{font-size:11px;font-weight:700;margin-top:6px;}
+.vc{color:#1D9E75;}.vw{color:#E24B4A;}.vs{color:#888;}
+</style></head><body>
+<div class="hdr"><h1>${esc(form.title)}</h1><div class="sub">${result.date} · ${form.duration} min</div></div>
+<div class="strip">
+<div class="sc"><div class="scv" style="color:#534AB7">${pct}%</div><div class="sck">Score</div></div>
+<div class="sc"><div class="scv" style="color:#1D9E75">${result.correct}</div><div class="sck">Correct</div></div>
+<div class="sc"><div class="scv" style="color:#E24B4A">${result.wrong}</div><div class="sck">Wrong</div></div>
+<div class="sc"><div class="scv" style="color:#888">${result.skip}</div><div class="sck">Skipped</div></div></div>
+<div class="pbar"><div class="pfill" style="width:${pct}%;background:${bc}"></div></div>
+<h2 style="font-size:13px;margin-bottom:9px;">Question Review & Answer Key</h2>`;
+  form.questions.forEach((q,i)=>{
+    const ua=(result.answers||[])[i],ca=q.ans;
+    const isSkip=ua===null||ua===undefined,isOk=ua===ca;
+    const v=isSkip?`<div class="v vs">— Skipped · Correct: ${L[ca]}</div>`:isOk?`<div class="v vc">✓ Correct</div>`:`<div class="v vw">✗ Wrong · Correct: ${L[ca]}</div>`;
+    html+=`<div class="qa"><div class="qb">Q${i+1}</div><div class="qt">${esc(q.text)}</div>
+<div class="opts">${q.opts.map((o,j)=>{let c='opt';if(j===ca)c+=' c';else if(j===ua&&!isOk)c+=' w';return`<div class="${c}"><strong>${L[j]}.</strong> ${esc(o)}</div>`;}).join('')}</div>${v}</div>`;
+  });
+  html+=`
+<!-- ══ PERMISSION SCREEN ══ -->
+<div id="perm-screen">
+  <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.5rem;letter-spacing:.06em;color:#F0F0F8;display:flex;align-items:center;gap:4px;"><span style="color:#C8F135;">F</span>LICK<span style="width:7px;height:7px;border-radius:50%;background:#C8F135;display:inline-block;margin-bottom:3px;"></span></div>
+  <div class="perm-center">
+    <h2 style="font-family:'Space Grotesk',sans-serif;">Camera &amp; Mic Setup</h2>
+    <p>This exam uses your <strong>camera</strong> to detect hand gestures and your <strong>microphone</strong> to confirm presence. Both must be granted now — <em>before</em> the exam timer begins.</p>
+    <div class="perm-grid">
+      <div class="pi" id="pi-cam">
+        <i class="ti ti-camera"></i>
+        <div class="pin">Camera</div>
+        <div class="pis" id="pi-cam-st">Not granted</div>
+      </div>
+      <div class="pi" id="pi-mic">
+        <i class="ti ti-microphone"></i>
+        <div class="pin">Microphone</div>
+        <div class="pis" id="pi-mic-st">Not granted</div>
+      </div>
+    </div>
+    <div class="info-note">
+      <i class="ti ti-alert-triangle" style="flex-shrink:0;margin-top:1px;"></i>
+      <span>A browser popup will appear — click <strong>Allow</strong> for both. If blocked by accident, click the camera icon in your browser's address bar and reset permissions.</span>
+    </div>
+    <div id="pi-err" style="color:#E24B4A;font-size:12px;margin-bottom:.6rem;min-height:16px;"></div>
+    <div style="display:flex;flex-direction:column;gap:.5rem;">
+      <button class="btn btn-primary" id="pi-req-btn" style="width:100%;justify-content:center;" onclick="doRequestPermissions()">
+        <i class="ti ti-shield-check"></i> Request Camera &amp; Mic
+      </button>
+      <button class="btn btn-green" id="pi-start-btn" style="width:100%;justify-content:center;display:none;" onclick="beginExamNow()">
+        <i class="ti ti-player-play"></i> Start Exam Now
+      </button>
+      <button class="btn btn-sm" style="width:100%;justify-content:center;" onclick="backToEntry()">
+        <i class="ti ti-arrow-left"></i> Back
+      </button>
+    </div>
+  </div>
+</div>
+
+</body></html>`;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download=`report-${form.title.replace(/\s+/g,'-').toLowerCase()}.html`;
+  a.click();
+}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ══════════════════════════════════════
+   SEED DATA
+══════════════════════════════════════ */
+if(!DB.forms.length){
+  DB.forms=[{id:1,title:'Python Module 5 — File Handling & OOP',desc:'Covers file handling, OOP, zipfile, shelve, os.path',
+    duration:10,created:new Date().toLocaleDateString(),
+    questions:[
+      {text:'What mode string opens a file in Python for reading?',opts:["'w'","'r'","'rb+'","'a'"],ans:1},
+      {text:'Which module handles compressed .zip archive files?',opts:['tarfile','zipfile','archivelib','shutil'],ans:1},
+      {text:'In OOP, a function defined inside a class is called a?',opts:['Function','Procedure','Method','Subroutine'],ans:2},
+      {text:'Which os.path function returns True if a path exists?',opts:['os.path.isdir()','os.path.isfile()','os.path.exists()','os.path.stat()'],ans:2},
+      {text:'What does __init__ do in a Python class?',opts:['Destroys the object','Initializes instance attributes','Imports the module','Defines a static method'],ans:1}
+    ]}];
+}
+</script>
+</body>
+</html>
