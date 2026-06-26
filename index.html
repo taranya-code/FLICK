@@ -270,7 +270,7 @@ label{font-size:11px;color:var(--text2);font-weight:500;display:block;margin-bot
 }
 
 /* ── PERM SCREEN ── */
-#perm-screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;padding:2rem;}
+#perm-screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;padding:2rem;position:relative;z-index:1;}
 .perm-center{background:var(--bg2,#fff);border:.5px solid var(--border,#ddd);border-radius:16px;padding:2rem;width:100%;max-width:440px;}
 .perm-center h2{font-size:1.1rem;font-weight:700;margin-bottom:.35rem;}
 .perm-center p{font-size:12px;color:var(--text2,#555);margin-bottom:1.1rem;line-height:1.55;}
@@ -583,7 +583,8 @@ body::before{
   background-image:radial-gradient(rgba(200,241,53,.03) 1px, transparent 1px);
   background-size:32px 32px;pointer-events:none;z-index:0;
 }
-.screen,.app-nav,.exam-grid,#exam-overlay,.modal-backdrop>*{position:relative;z-index:1;}
+#portal-pick,#host-portal,#student-portal,.app-nav,.exam-grid,
+#exam-overlay,.modal-backdrop>*,#perm-screen{position:relative;z-index:1;}
 
 /* FLICK footer watermark on screens */
 .screen::after{
@@ -604,7 +605,7 @@ body::before{
 <!-- ══════════════════════════════════════
      PORTAL SELECTOR
 ══════════════════════════════════════ -->
-<div id="portal-pick">
+<div id="portal-pick" style="display:flex;">
   <div class="portal-logo" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:2.2rem;letter-spacing:.05em;color:#F0F0F8;display:flex;align-items:center;gap:.4rem;"><span style="color:#C8F135;">F</span>LICK<span style="width:8px;height:8px;border-radius:50%;background:#C8F135;display:inline-block;margin-bottom:4px;flex-shrink:0;"></span></div>
   <p style="color:#8888A4;font-size:12px;letter-spacing:.12em;text-transform:uppercase;">One Flick. Zero Touch.</p>
   <p style="color:var(--text2);font-size:14px;text-align:center;">Select your role to continue</p>
@@ -900,13 +901,16 @@ function enterPortal(role){
     renderHostForms(); renderSessions();
   } else {
     document.getElementById('student-portal').style.display='block';
+    document.getElementById('student-entry').style.display='flex';
   }
 }
 function backToPortal(){
   ['host-portal','student-portal'].forEach(id=>document.getElementById(id).style.display='none');
   document.getElementById('portal-pick').style.display='flex';
-  document.getElementById('student-entry').style.display='flex';
-  document.getElementById('student-result').style.display='none';
+  const sr=document.getElementById('student-result');
+  if(sr) sr.style.display='none';
+  const se=document.getElementById('student-entry');
+  if(se) se.style.display='none';
 }
 
 /* ══════════════════════════════════════
@@ -1195,14 +1199,17 @@ function backToEntry(){
 
 function resetPermScreen(){
   ['cam','mic'].forEach(k=>{
-    document.getElementById('pi-'+k).className='pi';
-    document.getElementById('pi-'+k+'-st').textContent='Not granted';
+    const el=document.getElementById('pi-'+k);
+    const st=document.getElementById('pi-'+k+'-st');
+    if(el) el.className='pi';
+    if(st) st.textContent='Not granted';
   });
-  document.getElementById('pi-err').textContent='';
+  const errEl=document.getElementById('pi-err');
+  if(errEl) errEl.textContent='';
   const rb=document.getElementById('pi-req-btn');
-  rb.style.display='';rb.disabled=false;
-  rb.innerHTML='<i class="ti ti-shield-check"></i> Request Camera & Mic';
-  document.getElementById('pi-start-btn').style.display='none';
+  if(rb){rb.style.display='';rb.disabled=false;rb.innerHTML='<i class="ti ti-shield-check"></i> Request Camera & Mic';}
+  const sb=document.getElementById('pi-start-btn');
+  if(sb) sb.style.display='none';
   if(_pStream){_pStream.getTracks().forEach(t=>t.stop());_pStream=null;}
 }
 
@@ -1748,6 +1755,8 @@ function buildReportDOM_student(form, result){
     <div class="sci"><div class="sci-v" style="color:#888">${result.skip}</div><div class="sci-k">Skipped</div></div>`;
   document.getElementById('sr-qa').innerHTML=qaHTML(form,result);
   document.getElementById('sr-dl').onclick=()=>downloadReport(form,result);
+  document.getElementById('student-portal').style.display='block';
+  document.getElementById('student-entry').style.display='none';
   document.getElementById('student-result').style.display='block';
 }
 
